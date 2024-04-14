@@ -1,15 +1,25 @@
+import React, { useContext } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/Login/Login';
+import Dashboard from './pages/Dashboard/Dashboard';
+import { AuthContext } from './context/AuthContext';
 
+const App = () => {
+  const { isLoggedIn } = useContext(AuthContext);
 
-function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-     
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route
+          path="/dashboard"
+          element={
+            isLoggedIn ? <Dashboard /> : <Navigate replace to="/" />
+          }
+        />
+        {/* Añade aquí más rutas protegidas */}
+      </Routes>
+    </Router>
   );
 }
 
