@@ -1,12 +1,12 @@
-// /pages/Login/Login.jsx
 import React from 'react';
 import LoginForm from '../../components/login/LoginForm';
 
 const LoginPage = () => {
   return (
-    <div>
-      <h1>Iniciar Sesión</h1>
-      <LoginForm />
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-400">
+      <div className="w-full max-w-md">
+        <LoginForm />
+      </div>
     </div>
   );
 };

@@ -1,57 +1,53 @@
-import React, { createContext, useEffect, useState } from 'react';
-import { loginUser, getProfile } from '../api/api';
+// /context/AuthContext.jsx
+import React, { createContext, useState, useEffect } from 'react';
+import { loginUser } from '../api/api';
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const login = async (username, password) => {
     try {
-      const response = await loginUser({ username, password }); // Obtenemos la respuesta completa
-      const { access_token, username: loggedInUsername } = response; // Extraemos el access_token y el username
+      const response = await loginUser({ username, password });
+      const { access_token, username: loggedInUsername } = response;
       
       if (access_token) {
-        localStorage.setItem('token', access_token); // Guarda el token en localStorage
+        localStorage.setItem('token', access_token);
         setIsLoggedIn(true);
-        setUser({ username: loggedInUsername }); // Establece el username en el estado del usuario
+        setUser({ username: loggedInUsername });
       }
+      
+      return response; 
     } catch (error) {
       console.error('Error logging in:', error);
       throw error;
     }
   };
-  
-  // const logout = () => {
-  //   localStorage.removeItem('user');
-  //   setIsLoggedIn(false);
-  //   setUser(null);
-  // };
 
-  const fetchProfile = async () => {
+  const logout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    setUser(null);
+
+  };
+
+  const checkUserAuthentication = () => {
     const token = localStorage.getItem('token');
     if (token) {
-      try {
-        const profile = await getProfile(token);
-        setIsLoggedIn(true);
-        setUser(profile); // Asumiendo que profile contiene el username
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-        // Aquí podrías manejar la expiración del token o errores de red
-      }
+      setIsLoggedIn(true);
     }
+    setLoading(false);
   };
-  
 
-  // Cargar el perfil del usuario al montar el componente si hay un token almacenado
   useEffect(() => {
-    fetchProfile();
+    checkUserAuthentication();
   }, []);
-  
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, user }}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout, user, loading }}>
       {children}
     </AuthContext.Provider>
   );
