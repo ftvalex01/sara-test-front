@@ -23,7 +23,7 @@ const SideMenu = () => {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/quiz"  className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200">
+            <NavLink to="/quiz/setup"  className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200">
               Hacer Test
             </NavLink>
           </li>

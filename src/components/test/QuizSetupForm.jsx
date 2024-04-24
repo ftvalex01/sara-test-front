@@ -1,19 +1,22 @@
+// QuizSetupForm.jsx
 import React, { useState } from 'react';
+import { useTest } from '../../context/TextContext'; // Ajusta la ruta según necesidad
 import { useNavigate } from 'react-router-dom';
-
 const QuizSetupForm = () => {
-  const navigate = useNavigate();
-  const [numQuestions, setNumQuestions] = useState('');
+  const [numQuestionsInput, setNumQuestionsInput] = useState('');
   const [error, setError] = useState('');
+  const { setNumQuestions } = useTest();
+  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const num = parseInt(numQuestions);
+    const num = parseInt(numQuestionsInput);
     if (num < 1 || num > 20 || isNaN(num)) {
       setError('Por favor, introduce un número entre 1 y 20');
       return;
     }
-    navigate(`/quiz/${num}`);
+    setNumQuestions(num);
+    navigate("/quiz/start");
   };
 
   return (
@@ -26,8 +29,8 @@ const QuizSetupForm = () => {
           id="numQuestions"
           type="number"
           placeholder="Número de preguntas"
-          value={numQuestions}
-          onChange={(e) => setNumQuestions(e.target.value)}
+          value={numQuestionsInput}
+          onChange={(e) => setNumQuestionsInput(e.target.value)}
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         />
       </div>

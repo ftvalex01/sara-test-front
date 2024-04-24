@@ -12,15 +12,17 @@ const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       const response = await loginUser({ username, password });
-      const { access_token, username: loggedInUsername } = response;
+      const { access_token, username: loggedInUsername, userId } = response;
       
       if (access_token) {
+        // Guardar el token y la información del usuario en localStorage
         localStorage.setItem('token', access_token);
+        localStorage.setItem('user', JSON.stringify({ username: loggedInUsername, userId }));
         setIsLoggedIn(true);
-        setUser({ username: loggedInUsername });
+        setUser({ username: loggedInUsername, userId });
       }
       
-      return response; 
+      return response;
     } catch (error) {
       console.error('Error logging in:', error);
       throw error;
@@ -28,16 +30,19 @@ const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    // Remover token y usuario de localStorage al hacer logout
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setIsLoggedIn(false);
     setUser(null);
-
   };
 
   const checkUserAuthentication = () => {
     const token = localStorage.getItem('token');
-    if (token) {
+    const storedUser = localStorage.getItem('user');
+    if (token && storedUser) {
       setIsLoggedIn(true);
+      setUser(JSON.parse(storedUser)); // Parsear el usuario guardado y actualizar el estado
     }
     setLoading(false);
   };

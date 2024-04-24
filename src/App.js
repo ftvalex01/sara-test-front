@@ -2,13 +2,13 @@ import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login/Login';
 import QuizForm from './components/test/QuizForm';
-import QuizSetupForm from './components/test/QuizSetupForm'; // Importa tu componente QuizSetupForm
+import QuizSetupForm from './components/test/QuizSetupForm';
 import TestStatistics from './components/test/TestStatistics';
 import ErrorQuizForm from './components/test/ErrorQuizForm';
 import Dashboard from './pages/Dashboard/Dashboard';
 import { AuthContext } from './context/AuthContext';
 import SideMenu from './components/sidemenu/SideMenu';
-import PrivateRoute from './routes/PrivateRoute'
+
 import './index.css';
 
 const App = () => {
@@ -32,8 +32,8 @@ const App = () => {
             {isLoggedIn && (
               <>
                 <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/quiz" element={<QuizSetupForm />} /> {/* Ruta para el formulario de configuración */}
-                <Route path="/quiz/:numQuestions" element={<QuizForm />} /> {/* Ruta para el test con el número de preguntas */}
+                <Route path="/quiz/setup" element={<QuizSetupForm />} />
+                <Route path="/quiz/start" element={<QuizForm />} />
                 <Route path="/statistics" element={<TestStatistics />} />
                 <Route path="/error-quiz" element={<ErrorQuizForm />} />
               </>
