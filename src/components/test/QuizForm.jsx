@@ -8,10 +8,10 @@ const QuizForm = () => {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [results, setResults] = useState(null);
+  const [testCompleted, setTestCompleted] = useState(false);
   const { user } = useContext(AuthContext);
   const { numQuestions } = useTest();
   const apiBaseUrl = process.env.REACT_APP_API_URL;
-
   useEffect(() => {
     const fetchQuestions = async () => {
       if (user && numQuestions > 0) {
@@ -33,86 +33,108 @@ const QuizForm = () => {
   const handleOptionChange = (questionId, option) => {
     setAnswers(prev => ({ ...prev, [questionId]: option }));
   };
+  console.log(answers)
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // Verificar si todas las preguntas han sido respondidas
     const allAnswered = questions.every(question => answers[question._id] !== '');
     if (!allAnswered) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Por favor, responde a todas las preguntas antes de enviar el test.',
-      });
-      return;
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Por favor, responde a todas las preguntas antes de enviar el test.',
+        });
+        return;
     }
 
     if (user && questions.length > 0) {
-      try {
-        const response = await axios.post(`${apiBaseUrl}/tests/complete`, {
-          userId: user.userId,
-          answers: Object.keys(answers).map(key => ({
-            questionId: key,
-            selectedOption: answers[key]
-          }))
-        });
-        setResults(response.data);
-        Swal.fire(
-          '¡Buen trabajo!',
-          'Respuestas enviadas y evaluadas correctamente',
-          'success'
-        );
-      } catch (error) {
-        console.error('Error submitting answers:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al enviar',
-          text: 'Ocurrió un error al enviar las respuestas.',
-        });
-      }
+        try {
+            const response = await axios.post(`${apiBaseUrl}/tests/complete`, {
+                userId: user.userId,
+                answers: Object.keys(answers).map(key => ({
+                    questionId: key,
+                    selectedOption: answers[key]
+                }))
+            });
+            setResults(response.data);
+            const updatedQuestions = questions.map(q => {
+                const detail = response.data.details.find(d => d.questionId === q._id);
+                return {
+                    ...q,
+                    isCorrect: detail.isCorrect,
+                    correctAnswer: q.correct_answer // Asume que obtienes esto desde el backend
+                };
+            });
+            setQuestions(updatedQuestions);
+            setTestCompleted(true);  // Indica que el test ha sido completado
+            Swal.fire(
+                '¡Buen trabajo!',
+                'Respuestas enviadas y evaluadas correctamente',
+                'success'
+            );
+        } catch (error) {
+            console.error('Error submitting answers:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al enviar',
+                text: 'Ocurrió un error al enviar las respuestas.',
+            });
+        }
     } else {
-      Swal.fire({
-        icon: 'info',
-        title: 'Sesión no iniciada',
-        text: 'Debe iniciar sesión y tener preguntas para enviar respuestas.',
-      });
+        Swal.fire({
+            icon: 'info',
+            title: 'Sesión no iniciada',
+            text: 'Debe iniciar sesión y tener preguntas para enviar respuestas.',
+        });
     }
-  };
+};
+console.log(questions)
+console.log(answers)
+console.log(results)
 
   return (
     <div>
       <form onSubmit={handleSubmit} className="space-y-4">
         {questions.length > 0 ? questions.map(question => (
-          <div key={question._id} className="bg-white shadow-md rounded-lg p-4">
+          <div key={question._id} className={`bg-white shadow-md rounded-lg p-4 ${testCompleted ? (answers[question._id] === question.correctAnswer ? 'bg-green-500' : 'bg-red-500') : ''}`}>
             <h3 className="text-lg font-semibold">{question.question}</h3>
             <div className="mt-2">
-              {question.options.map(option => (
-                <label key={option} className="block">
+              {Object.entries(question.options).map(([optionKey, optionValue]) => (
+                <label key={optionKey} className="block">
                   <input
                     type="radio"
                     name={`question_${question._id}`}
-                    value={option}
-                    checked={answers[question._id] === option}
+                    value={optionKey}
+                    checked={answers[question._id] === optionKey}
                     onChange={(event) => handleOptionChange(question._id, event.target.value)}
                     className="mr-2"
+                    disabled={testCompleted}  // Deshabilitar después de enviar el test
                   />
-                  {option}
+                  {optionValue}
                 </label>
               ))}
+              {testCompleted && answers[question._id] !== question.correctAnswer && (
+                <p className="text-white">Respuesta correcta: {question.correctAnswer}</p>
+              )}
             </div>
           </div>
         )) : <p>No hay preguntas disponibles.</p>}
-        <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Enviar Test</button>
+        {!testCompleted && (
+          <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Enviar Test</button>
+        )}
       </form>
       {results && (
-        <div className="mt-4 bg-white shadow-md rounded-lg p-4">
-          <h3 className="text-lg font-semibold">Resultados del Test:</h3>
-          <p>Respuestas correctas: {results.correctAnswers}</p>
-          <p>Respuestas incorrectas: {results.incorrectAnswers}</p>
-        </div>
-      )}
-    </div>
+  <div className="mt-4 bg-white shadow-md rounded-lg p-4">
+    <h3 className="text-lg font-semibold">Resultados del Test:</h3>
+    <p>Respuestas correctas: {results.correctCount}</p>
+    <p>Respuestas incorrectas: {results.incorrectCount}</p>
+    <p>Puntuación: {((results.correctCount / questions.length) * 100).toFixed(2)}%</p>
+  </div>
+)}
+</div>
+
   );
 };
+
 
 export default QuizForm;
