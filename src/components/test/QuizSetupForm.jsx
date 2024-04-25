@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useTest } from '../../context/TextContext'; // Ajusta la ruta según necesidad
+import { useTest } from '../../context/TextContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
@@ -8,7 +8,9 @@ const QuizSetupForm = () => {
   const [numQuestionsInput, setNumQuestionsInput] = useState('');
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [error, setError] = useState('');
-  const { setNumQuestions } = useTest();
+  const [withTime, setWithTime] = useState(false);
+  const [timeMinutes, setTimeMinutes] = useState(5); // Default time is 5 minutes
+  const { setNumQuestions, setTimeLimit } = useTest(); // Assume you have a setTimeLimit function in your context
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const apiBaseUrl = process.env.REACT_APP_API_URL;
@@ -19,9 +21,9 @@ const QuizSetupForm = () => {
         try {
           const response = await axios.post(`${apiBaseUrl}/tests/generate`, {
             userId: user.userId,
-            numberOfQuestions: 0  // Solicitamos 0 preguntas para solo obtener el conteo de disponibles
+            numberOfQuestions: 0
           });
-          setTotalQuestions(response.data.length);  // Establece el total basado en la cantidad de preguntas no completadas
+          setTotalQuestions(response.data.length);
         } catch (error) {
           console.error('Error fetching available questions:', error);
           setError('No se pudo cargar el número total de preguntas disponibles.');
@@ -34,12 +36,13 @@ const QuizSetupForm = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     const num = parseInt(numQuestionsInput);
-    if (isNaN(num) || num < 1 || num > totalQuestions) {
-      setError(`Por favor, introduce un número entre 1 y ${totalQuestions}`);
+    if (isNaN(num) || num < 1 || num > 20) {
+      setError(`Por favor, introduce un número entre 1 y 20`);
       return;
     }
     setNumQuestions(num);
-    navigate("/quiz/start"); // Asegúrate de que esta ruta es la correcta
+    setTimeLimit(withTime ? timeMinutes * 60 : null); // Convert minutes to seconds
+    navigate("/quiz/start");
   };
 
   return (
@@ -57,6 +60,34 @@ const QuizSetupForm = () => {
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         />
       </div>
+      {/* <div className="mb-6">
+        <label htmlFor="withTime" className="block text-gray-700 text-sm font-bold mb-2">
+          ¿Deseas un test con tiempo?
+        </label>
+        <input
+          id="withTime"
+          type="checkbox"
+          checked={withTime}
+          onChange={(e) => setWithTime(e.target.checked)}
+          className="mr-2 leading-tight"
+        />
+        <label htmlFor="withTime" className="text-gray-700">Sí</label>
+      </div>
+      {withTime && (
+        <div className="mb-6">
+          <label htmlFor="timeMinutes" className="block text-gray-700 text-sm font-bold mb-2">
+            Duración del test (minutos)
+          </label>
+          <input
+            id="timeMinutes"
+            type="number"
+            placeholder="Duración en minutos"
+            value={timeMinutes}
+            onChange={(e) => setTimeMinutes(e.target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          />
+        </div>
+      )} */}
       {error && <p className="text-red-500 text-xs italic">{error}</p>}
       <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
         Empezar Test

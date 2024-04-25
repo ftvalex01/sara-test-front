@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import TestCard from './TestCard';
+import TestDetails from './TestDetails';
 
 const TestStatistics = () => {
   const [tests, setTests] = useState([]);
+  const [selectedTest, setSelectedTest] = useState(null);
 
   useEffect(() => {
     const fetchTests = async () => {
@@ -17,35 +20,31 @@ const TestStatistics = () => {
     fetchTests();
   }, []);
 
-  const toggleDetails = index => {
-    const newTests = tests.map((test, i) => {
-      if (i === index) {
-        return { ...test, isOpen: !test.isOpen };
-      }
-      return test;
-    });
-    setTests(newTests);
+  const handleToggleDetails = testId => {
+    const test = tests.find(t => t._id === testId);
+    setSelectedTest(test);
   };
 
- 
+  const handleBack = () => {
+    setSelectedTest(null);
+  };
+console.log(tests)
+console.log(selectedTest)
   return (
     <div className="p-4">
       <h2 className="text-xl font-semibold mb-4">Estadísticas de Tests Realizados</h2>
-      <div>
-        {tests.map((test, index) => (
-          <div key={index} className="bg-white shadow-md rounded-lg p-4 mb-4 cursor-pointer" onClick={() => toggleDetails(index)}>
-            <h3 className="text-lg font-bold">{test.testName} - {test.date}</h3>
-            <p className="text-sm text-gray-600">Puntuación: {test.score}</p>
-            {test.isOpen && (
-              <div className="mt-2 text-gray-800">
-                <p>Detalles del Test:</p>
-                {/* Asumiendo que los detalles se encuentran bien definidos en tu backend */}
-                <p>{test.details}</p>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+      {!selectedTest && (
+        <div>
+          {tests.map((test) => (
+            <TestCard
+              key={test._id}
+              test={test}
+              onToggleDetails={handleToggleDetails}
+            />
+          ))}
+        </div>
+      )}
+      {selectedTest && <TestDetails test={selectedTest} onBack={handleBack} />}
     </div>
   );
 };

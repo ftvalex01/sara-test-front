@@ -32,11 +32,11 @@ const SideMenu = () => {
               Ver Estadísticas
             </NavLink>
           </li>
-          <li>
+          {/* <li>
             <NavLink to="/error-quiz"  className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200">
               Realizar Test de Errores
             </NavLink>
-          </li>
+          </li> */}
           {/* Separador */}
           <li className="mt-auto">
             <button onClick={handleLogout} className="flex items-center justify-start w-full text-left px-4 py-3 rounded-md hover:bg-red-600 transition duration-200 text-red-300">

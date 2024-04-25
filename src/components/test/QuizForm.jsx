@@ -33,7 +33,7 @@ const QuizForm = () => {
   const handleOptionChange = (questionId, option) => {
     setAnswers(prev => ({ ...prev, [questionId]: option }));
   };
-  console.log(answers)
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -88,15 +88,13 @@ const QuizForm = () => {
         });
     }
 };
-console.log(questions)
-console.log(answers)
-console.log(results)
+
 
   return (
     <div>
       <form onSubmit={handleSubmit} className="space-y-4">
         {questions.length > 0 ? questions.map(question => (
-          <div key={question._id} className={`bg-white shadow-md rounded-lg p-4 ${testCompleted ? (answers[question._id] === question.correctAnswer ? 'bg-green-500' : 'bg-red-500') : ''}`}>
+          <div key={question._id} className={`bg-white shadow-md rounded-lg p-4 ${testCompleted ? (answers[question._id] === question.correctAnswer ? 'bg-green-800' : 'bg-red-900') : ''}`}>
             <h3 className="text-lg font-semibold">{question.question}</h3>
             <div className="mt-2">
               {Object.entries(question.options).map(([optionKey, optionValue]) => (
