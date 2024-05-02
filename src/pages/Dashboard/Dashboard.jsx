@@ -2,7 +2,7 @@ import React from 'react';
 
 const Dashboard = () => {
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-black-100">
       <main className="flex-1 overflow-x-hidden overflow-y-auto flex justify-center items-center text-center">
         <div className="max-w-lg p-8 bg-white rounded-lg shadow-md">
           <h1 className="text-3xl font-semibold mb-4">¡Bienvenido a tu aplicación de preparación para oposiciones!</h1>

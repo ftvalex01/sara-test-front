@@ -5,6 +5,7 @@ import QuizForm from './components/test/QuizForm';
 import QuizSetupForm from './components/test/QuizSetupForm';
 import TestStatistics from './components/test/TestStatistics';
 import ErrorQuizForm from './components/test/ErrorQuizForm';
+import ErrorQuizSetupForm from './components/test/ErrorQuizSetupForm'; 
 import Dashboard from './pages/Dashboard/Dashboard';
 import { AuthContext } from './context/AuthContext';
 import SideMenu from './components/sidemenu/SideMenu';
@@ -35,7 +36,8 @@ const App = () => {
                 <Route path="/quiz/setup" element={<QuizSetupForm />} />
                 <Route path="/quiz/start" element={<QuizForm />} />
                 <Route path="/statistics" element={<TestStatistics />} />
-                <Route path="/error-quiz" element={<ErrorQuizForm />} />
+                <Route path="/error-quiz/setup" element={<ErrorQuizSetupForm />} />
+                <Route path="/error-quiz/start" element={<ErrorQuizForm />} />
               </>
             )}
           </Routes>

@@ -26,7 +26,8 @@ const TestCard = ({ test, onToggleDetails }) => {
   const percentage = ((correctAnswers / totalQuestions) * 100).toFixed(2);
 
   return (
-    <div className="bg-white shadow-lg rounded-lg p-4 mb-4 cursor-pointer hover:bg-gray-100 transition duration-300 ease-in-out" onClick={() => onToggleDetails(test._id)}>
+    <div className="bg-gray-400 shadow-lg rounded-lg p-4 mb-4 cursor-pointer hover:bg-gray-300 transition duration-300 ease-in-out" onClick={() => onToggleDetails(test._id)}>
+       <h3 className="text-lg font-semibold">{test?.testName}</h3>
       <h3 className="text-lg font-semibold">{`Test realizado el ${formatDate(test.createdAt)}`}</h3>
       <div className="text-sm text-gray-600">
         <p>Respuestas correctas: {correctAnswers}</p>

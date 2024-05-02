@@ -3,22 +3,31 @@ import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 import { useTest } from '../../context/TextContext';
 import Swal from 'sweetalert2'; // Importar SweetAlert2
+import { useLocation } from 'react-router-dom';
 
 const QuizForm = () => {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [results, setResults] = useState(null);
+  const [testName, setTestName] = useState('');
   const [testCompleted, setTestCompleted] = useState(false);
+  const { state } = useLocation(); 
   const { user } = useContext(AuthContext);
   const { numQuestions } = useTest();
   const apiBaseUrl = process.env.REACT_APP_API_URL;
+  useEffect(() => {
+    if (state && state.testName) {
+      setTestName(state.testName);
+    }
+  }, [state]);
   useEffect(() => {
     const fetchQuestions = async () => {
       if (user && numQuestions > 0) {
         try {
           const response = await axios.post(`${apiBaseUrl}/tests/generate`, {
             userId: user.userId,
-            numberOfQuestions: numQuestions
+            numberOfQuestions: numQuestions,
+            testName: testName 
           });
           setQuestions(response.data);
           setAnswers(response.data.reduce((acc, question) => ({ ...acc, [question._id]: '' }), {}));
@@ -54,7 +63,8 @@ const QuizForm = () => {
                 answers: Object.keys(answers).map(key => ({
                     questionId: key,
                     selectedOption: answers[key]
-                }))
+                })),
+                testName
             });
             setResults(response.data);
             const updatedQuestions = questions.map(q => {
@@ -88,13 +98,14 @@ const QuizForm = () => {
         });
     }
 };
-
+console.log(testName)
 
   return (
     <div>
       <form onSubmit={handleSubmit} className="space-y-4">
         {questions.length > 0 ? questions.map(question => (
-          <div key={question._id} className={`bg-white shadow-md rounded-lg p-4 ${testCompleted ? (answers[question._id] === question.correctAnswer ? 'bg-green-800' : 'bg-red-900') : ''}`}>
+         <div key={question._id} className={`bg-white shadow-md rounded-lg p-4 ${testCompleted ? (answers[question._id] === question.correctAnswer ? 'bg-green-700' : 'bg-red-800') : ''}`}>
+
             <h3 className="text-lg font-semibold">{question.question}</h3>
             <div className="mt-2">
               {Object.entries(question.options).map(([optionKey, optionValue]) => (
