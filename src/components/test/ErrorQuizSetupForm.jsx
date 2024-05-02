@@ -38,16 +38,21 @@ const ErrorQuizSetupForm = () => {
   };
 
   return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
     <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <h2 className="text-2xl font-bold text-center text-gray-800">Test de Errores</h2>
+    <div className="mb-6">
+        <p className="text-sm">Preguntas de errores disponibles: {totalErrorQuestions}</p>
+      </div>
       <div className="mb-4">
-        <label htmlFor="testName" className="block text-gray-700 text-sm font-bold mb-2">Nombre del Test:</label>
+      <label htmlFor="testName" className="block text-sm font-semibold text-gray-700 mb-1">Nombre del Test</label>
         <input
           id="testName"
           type="text"
           value={testName}
           onChange={(e) => setTestName(e.target.value)}
           placeholder="Ingrese un nombre para el test"
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
         />
       </div>
       <div className="mb-4">
@@ -57,17 +62,16 @@ const ErrorQuizSetupForm = () => {
           type="number"
           value={numErrorQuestionsInput}
           onChange={(e) => setNumErrorQuestionsInput(e.target.value)}
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
         />
       </div>
       {error && <p className="text-red-500 text-xs italic">{error}</p>}
-      <div className="mb-6">
-        <p className="text-sm">Preguntas de errores disponibles: {totalErrorQuestions}</p>
-      </div>
+     
       <div className="flex items-center justify-between">
         <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Configurar Test de Errores</button>
       </div>
     </form>
+    </div>
   );
 };
 

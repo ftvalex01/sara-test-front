@@ -33,6 +33,9 @@ const SideMenu = () => {
                 text: 'Tus estadísticas y tests han sido reiniciados correctamente.',
                 icon: 'success',
               });
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
             } else {
               Swal.fire({
                 title: 'Error',

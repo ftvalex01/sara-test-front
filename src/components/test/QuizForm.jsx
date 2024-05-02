@@ -4,6 +4,7 @@ import { AuthContext } from '../../context/AuthContext';
 import { useTest } from '../../context/TextContext';
 import Swal from 'sweetalert2'; // Importar SweetAlert2
 import { useLocation } from 'react-router-dom';
+import './TestStatistics.css';  // Estilos personalizados
 
 const QuizForm = () => {
   const [questions, setQuestions] = useState([]);
@@ -98,13 +99,14 @@ const QuizForm = () => {
         });
     }
 };
-console.log(testName)
+
 
   return (
     <div>
       <form onSubmit={handleSubmit} className="space-y-4">
         {questions.length > 0 ? questions.map(question => (
-         <div key={question._id} className={`bg-white shadow-md rounded-lg p-4 ${testCompleted ? (answers[question._id] === question.correctAnswer ? 'bg-green-700' : 'bg-red-800') : ''}`}>
+       <div key={question._id} className={`bg-white shadow-md rounded-lg p-4 ${testCompleted ? (answers[question._id] === question.correctAnswer ? 'bg-green' : 'bg-red') : ''}`}>
+
 
             <h3 className="text-lg font-semibold">{question.question}</h3>
             <div className="mt-2">

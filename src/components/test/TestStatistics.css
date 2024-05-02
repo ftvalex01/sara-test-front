@@ -32,3 +32,11 @@
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
 }
+.bg-green {
+    background-color: #008000 !important; /* color verde */
+  }
+  
+  .bg-red {
+    background-color: #f31f00 !important; /* color rojo */
+  }
+  
