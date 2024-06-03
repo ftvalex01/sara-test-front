@@ -125,7 +125,7 @@ const QuizForm = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800">
       <div className="flex w-full h-full">
-        <aside className="w-1/4 bg-gray-200 dark:bg-gray-900 p-4 ml-2">
+        <aside className="w-1/4 bg-gray-400 dark:bg-gray-900 p-4 ml-2">
           <h2 className="text-lg font-bold mb-4 dark:text-gray-200">Preguntas</h2>
           <div className="space-y-2">
             {questions.map((question, index) => (
