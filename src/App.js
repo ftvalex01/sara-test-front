@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login/Login';
 import QuizForm from './components/test/QuizForm';
 import QuizSetupForm from './components/test/QuizSetupForm';
@@ -9,7 +9,6 @@ import ErrorQuizSetupForm from './components/test/ErrorQuizSetupForm';
 import Dashboard from './pages/Dashboard/Dashboard';
 import { AuthContext } from './context/AuthContext';
 import SideMenu from './components/sidemenu/SideMenu';
-
 import './index.css';
 
 const App = () => {
@@ -21,25 +20,21 @@ const App = () => {
 
   return (
     <Router>
-      <div className={`flex ${isLoggedIn ? 'min-h-screen' : 'justify-center items-center'}`}>
+      <div className={`flex min-h-screen ${isLoggedIn ? '' : 'bg-gray-100'}`}>
         {isLoggedIn && (
           <div className="w-64 fixed inset-y-0 z-30">
             <SideMenu />
           </div>
         )}
-        <div className={`flex-1 ${isLoggedIn ? 'lg:ml-64' : ''}`}>
+        <div className={`flex-1 ${isLoggedIn ? 'lg:ml-64' : 'flex justify-center items-center'}`}>
           <Routes>
-            <Route path="/" element={<Login />} />
-            {isLoggedIn && (
-              <>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/quiz/setup" element={<QuizSetupForm />} />
-                <Route path="/quiz/start" element={<QuizForm />} />
-                <Route path="/statistics" element={<TestStatistics />} />
-                <Route path="/error-quiz/setup" element={<ErrorQuizSetupForm />} />
-                <Route path="/error-quiz/start" element={<ErrorQuizForm />} />
-              </>
-            )}
+            <Route path="/" element={isLoggedIn ? <Navigate to="/dashboard" /> : <Login />} />
+            <Route path="/dashboard" element={isLoggedIn ? <Dashboard /> : <Navigate to="/" />} />
+            <Route path="/quiz/setup" element={isLoggedIn ? <QuizSetupForm /> : <Navigate to="/" />} />
+            <Route path="/quiz/start" element={isLoggedIn ? <QuizForm /> : <Navigate to="/" />} />
+            <Route path="/statistics" element={isLoggedIn ? <TestStatistics /> : <Navigate to="/" />} />
+            <Route path="/error-quiz/setup" element={isLoggedIn ? <ErrorQuizSetupForm /> : <Navigate to="/" />} />
+            <Route path="/error-quiz/start" element={isLoggedIn ? <ErrorQuizForm /> : <Navigate to="/" />} />
           </Routes>
         </div>
       </div>

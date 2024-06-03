@@ -3,6 +3,8 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { useTest } from '../../context/TextContext';
 import Swal from 'sweetalert2';
+import DarkModeToggle from './DarkModeToggle';
+
 const SideMenu = () => {
   const { isLoggedIn, logout, user } = useContext(AuthContext);
   const { resetTests } = useTest();
@@ -14,6 +16,7 @@ const SideMenu = () => {
       navigate('/');
     }
   };
+
   const handleResetTests = () => {
     if (user && user.userId) {
       Swal.fire({
@@ -57,37 +60,41 @@ const SideMenu = () => {
       console.error('El userId es inválido.');
     }
   };
+
   return (
-    <aside className="w-64 h-full bg-gray-800 text-gray-300" aria-label="Sidebar">
-      <div className="overflow-y-auto py-4 px-3 rounded ">
+    <aside className="w-64 h-full bg-gray-800 text-gray-300 dark:bg-gray-900 dark:text-gray-200" aria-label="Sidebar">
+      <div className="overflow-y-auto py-4 px-3 rounded">
+        <div className="mb-4">
+          <DarkModeToggle />
+        </div>
         <ul className="space-y-12 mt-20">
           <li>
-            <NavLink to="/dashboard" className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200">
+            <NavLink to="/dashboard" className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200 dark:hover:bg-gray-700">
               Dashboard
             </NavLink>
           </li>
           <li>
-            <NavLink to="/quiz/setup" className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200">
+            <NavLink to="/quiz/setup" className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200 dark:hover:bg-gray-700">
               Hacer Test
             </NavLink>
           </li>
           <li>
-            <NavLink to="/statistics" className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200">
+            <NavLink to="/statistics" className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200 dark:hover:bg-gray-700">
               Ver Estadísticas
             </NavLink>
           </li>
           <li>
-            <NavLink to="/error-quiz/setup" className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200">
+            <NavLink to="/error-quiz/setup" className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200 dark:hover:bg-gray-700">
               Realizar Test de Errores
             </NavLink>
           </li>
           <li className="mt-auto">
-            <button onClick={handleLogout} className="flex items-center justify-start w-full text-left px-4 py-3 rounded-md hover:bg-red-600 transition duration-200 text-red-300">
-            Logout
+            <button onClick={handleLogout} className="flex items-center justify-start w-full text-left px-4 py-3 rounded-md hover:bg-red-600 transition duration-200 text-red-300 dark:hover:bg-red-600">
+              Logout
             </button>
           </li>
           <li>
-            <button onClick={handleResetTests} className="flex items-center justify-start w-full text-left px-4 py-5 rounded-md hover:bg-red-800 transition duration-200 text-red-400">
+            <button onClick={handleResetTests} className="flex items-center justify-start w-full text-left px-4 py-5 rounded-md hover:bg-red-800 transition duration-200 text-red-400 dark:hover:bg-red-800">
               Reiniciar Tests
             </button>
           </li>

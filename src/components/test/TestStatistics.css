@@ -1,25 +1,38 @@
 .test-statistics {
   padding: 20px;
+  max-width: 100vw;
+  margin: auto;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  height:100vh;
 }
 
 .title {
-  font-size: 24px;
-  font-weight: bold;
+  text-align: center;
+  color: #333;
   margin-bottom: 20px;
+  font-size: 20px;
 }
 
 .filters {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 20px;
 }
 
-.filters input, .filters .react-datepicker-wrapper {
-  flex-grow: 1;
+.filters input[type="text"] {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }
 
 .clear-filters {
-  padding: 5px 10px;
+  padding: 8px 16px;
   background-color: #007bff;
   color: white;
   border: none;
@@ -27,16 +40,30 @@
   cursor: pointer;
 }
 
+.clear-filters:hover {
+  background-color: #0056b3;
+}
+
 .test-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
+  gap: 10px;
+}
+
+.test-card {
+  padding: 20px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.test-card:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 .bg-green {
-    background-color: #008000 !important; /* color verde */
-  }
-  
-  .bg-red {
-    background-color: #f31f00 !important; /* color rojo */
-  }
-  
+  background-color: #008000 !important; /* color verde */
+}
+
+.bg-red {
+  background-color:  #e65a50 !important; /* color rojo */
+}

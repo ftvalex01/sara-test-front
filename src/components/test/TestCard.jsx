@@ -9,7 +9,6 @@ const TestCard = ({ test, onToggleDetails }) => {
            date.getUTCFullYear();
   };
 
-  // Función para comparar las respuestas del usuario con las respuestas correctas
   const countCorrectAnswers = () => {
     let correctCount = 0;
     test.questions.forEach((question, index) => {
@@ -26,10 +25,10 @@ const TestCard = ({ test, onToggleDetails }) => {
   const percentage = ((correctAnswers / totalQuestions) * 100).toFixed(2);
 
   return (
-    <div className="bg-gray-400 shadow-lg rounded-lg p-4 mb-4 cursor-pointer hover:bg-gray-300 transition duration-300 ease-in-out" onClick={() => onToggleDetails(test._id)}>
-       <h3 className="text-lg font-semibold">{test?.testName}</h3>
-      <h3 className="text-lg font-semibold">{`Test realizado el ${formatDate(test.createdAt)}`}</h3>
-      <div className="text-sm text-gray-600">
+    <div className="bg-gray-400 dark:bg-gray-700 shadow-lg rounded-lg p-4 mb-4 cursor-pointer outline hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300 ease-in-out" onClick={() => onToggleDetails(test._id)}>
+      <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{test?.testName}</h3>
+      <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{`Test realizado el ${formatDate(test.createdAt)}`}</h3>
+      <div className="text-sm text-gray-900 dark:text-gray-200">
         <p>Respuestas correctas: {correctAnswers}</p>
         <p>Respuestas incorrectas: {incorrectAnswers}</p>
         <p>Porcentaje de acierto: {percentage}%</p>

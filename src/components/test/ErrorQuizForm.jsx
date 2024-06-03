@@ -3,35 +3,48 @@ import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 import { useTest } from '../../context/TextContext';
 import Swal from 'sweetalert2';
-import './TestStatistics.css';  // Estilos personalizados
+import { useLocation } from 'react-router-dom';
+import './TestStatistics.css';
+
 const ErrorQuizForm = () => {
   const { user } = useContext(AuthContext);
   const { numErrorQuestions } = useTest();
   const [questions, setQuestions] = useState([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
+  const [answeredQuestions, setAnsweredQuestions] = useState([]);
   const [results, setResults] = useState(null);
   const [testName, setTestName] = useState('');
   const [testCompleted, setTestCompleted] = useState(false);
+  const { state } = useLocation();
+
+  useEffect(() => {
+    if (state && state.testName) {
+      setTestName(state.testName);
+    }
+  }, [state]);
 
   useEffect(() => {
     if (user && numErrorQuestions > 0) {
-        axios.post(`${process.env.REACT_APP_API_URL}/tests/faults`, {
-            userId: user.userId,
-            limit: numErrorQuestions,
-            testName: testName 
-        }).then(response => {
-            setQuestions(response.data);
-            setAnswers(response.data.reduce((acc, question) => ({ ...acc, [question._id]: '' }), {}));
-        }).catch(error => {
-            console.error('Error fetching error questions:', error);
-            Swal.fire('Error', 'No se pudieron cargar las preguntas de error.', 'error');
-        });
+      axios.post(`${process.env.REACT_APP_API_URL}/tests/faults`, {
+        userId: user.userId,
+        limit: numErrorQuestions,
+        testName: state?.testName
+      }).then(response => {
+        setQuestions(response.data);
+        setAnswers(response.data.reduce((acc, question) => ({ ...acc, [question._id]: '' }), {}));
+      }).catch(error => {
+        console.error('Error fetching error questions:', error);
+        Swal.fire('Error', 'No se pudieron cargar las preguntas de error.', 'error');
+      });
     }
-}, [user, numErrorQuestions]);
-
+  }, [user, numErrorQuestions, state]);
 
   const handleOptionChange = (questionId, option) => {
     setAnswers(prev => ({ ...prev, [questionId]: option }));
+    if (!answeredQuestions.includes(questionId)) {
+      setAnsweredQuestions([...answeredQuestions, questionId]);
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -53,7 +66,8 @@ const ErrorQuizForm = () => {
           answers: Object.keys(answers).map(key => ({
             questionId: key,
             selectedOption: answers[key]
-          }))
+          })),
+          testName: state?.testName 
         });
         setResults(response.data);
         const updatedQuestions = questions.map(q => {
@@ -88,46 +102,120 @@ const ErrorQuizForm = () => {
     }
   };
 
-  return (
-    <div>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {questions.length > 0 ? questions.map(question => (
-        <div key={question._id} className={`bg-white shadow-md rounded-lg p-4 ${testCompleted ? (answers[question._id] === question.correctAnswer ? 'bg-green' : 'bg-red') : ''}`}>
+  const handleNextQuestion = () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    }
+  };
 
-            <h3 className="text-lg font-semibold">{question.question}</h3>
-            <div className="mt-2">
-              {Object.entries(question.options).map(([optionKey, optionValue]) => (
-                <label key={optionKey} className="block">
-                  <input
-                    type="radio"
-                    name={`question_${question._id}`}
-                    value={optionKey}
-                    checked={answers[question._id] === optionKey}
-                    onChange={(event) => handleOptionChange(question._id, event.target.value)}
-                    className="mr-2"
-                    disabled={testCompleted}  // Deshabilitar después de enviar el test
-                  />
-                  {optionValue}
-                </label>
-              ))}
-              {testCompleted && answers[question._id] !== question.correctAnswer && (
-                <p className="text-white">Respuesta correcta: {question.correctAnswer}</p>
-              )}
-            </div>
+  const handlePrevQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
+  };
+
+  const handleQuestionNavigation = (index) => {
+    setCurrentQuestionIndex(index);
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800">
+      <div className="flex w-full h-full">
+        <aside className="w-1/4 bg-gray-200 dark:bg-gray-900 p-4 ml-2">
+          <h2 className="text-lg font-bold mb-4 dark:text-gray-200">Preguntas</h2>
+          <div className="space-y-2">
+            {questions.map((question, index) => (
+              <button
+                key={index}
+                onClick={() => handleQuestionNavigation(index)}
+                className={`block w-full text-left p-2 rounded ${
+                  currentQuestionIndex === index ? 'bg-blue-500 text-white' :
+                  testCompleted ? (questions[index].isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white') :
+                  answeredQuestions.includes(question._id) ? 'bg-yellow-500 text-white' : 'bg-white text-black dark:bg-gray-700 dark:text-gray-200'
+                }`}
+              >
+                Pregunta {index + 1}
+              </button>
+            ))}
           </div>
-        )) : <p>No hay preguntas disponibles.</p>}
-        {!testCompleted && (
-          <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Enviar Test de Errores</button>
-        )}
-      </form>
-      {results && (
-        <div className="mt-4 bg-white shadow-md rounded-lg p-4">
-          <h3 className="text-lg font-semibold">Resultados del Test:</h3>
-          <p>Respuestas correctas: {results.correctCount}</p>
-          <p>Respuestas incorrectas: {results.incorrectCount}</p>
-          <p>Puntuación: {((results.correctCount / questions.length) * 100).toFixed(2)}%</p>
-        </div>
-      )}
+        </aside>
+        <main className="w-3/4 p-8">
+          {questions.length > 0 && (
+            <div className="bg-white dark:bg-gray-900 shadow-md rounded-lg p-8">
+              <h2 className="text-2xl font-bold mb-4 dark:text-gray-200">{testName}</h2>
+              <div>
+                <h3 className="text-lg font-semibold mb-2 dark:text-gray-200">{questions[currentQuestionIndex].question}</h3>
+                <div className="space-y-2">
+                  {Object.entries(questions[currentQuestionIndex].options).map(([optionKey, optionValue]) => {
+                    const isCorrectAnswer = optionKey === questions[currentQuestionIndex].correctAnswer;
+                    const isUserAnswer = answers[questions[currentQuestionIndex]._id] === optionKey;
+                    const answerClasses = testCompleted
+                      ? isCorrectAnswer ? 'text-green-500 dark:text-green-400' :
+                        isUserAnswer ? 'text-red-500 dark:text-red-400' : ''
+                      : '';
+
+                    return (
+                      <label key={optionKey} className={`block ${answerClasses} dark:text-gray-200`}>
+                        <input
+                          type="radio"
+                          name={`question_${questions[currentQuestionIndex]._id}`}
+                          value={optionKey}
+                          checked={isUserAnswer}
+                          onChange={(event) => handleOptionChange(questions[currentQuestionIndex]._id, event.target.value)}
+                          className="mr-2"
+                          disabled={testCompleted}  // Deshabilitar después de enviar el test
+                        />
+                        {optionValue}
+                        {testCompleted && (isUserAnswer || isCorrectAnswer) && (
+                          <>
+                             {isUserAnswer && ` - Tu respuesta${isCorrectAnswer ? ' ✓' : ' ✕'}`}
+                            {!isUserAnswer && isCorrectAnswer && ' - Respuesta correcta ✓'}
+                          </>
+                        )}
+                      </label>
+                    );
+                  })}
+                </div>
+                <div className="flex justify-between mt-4">
+                  <button
+                    type="button"
+                    onClick={handlePrevQuestion}
+                    disabled={currentQuestionIndex === 0}
+                    className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  >
+                    Anterior
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleNextQuestion}
+                    disabled={currentQuestionIndex === questions.length - 1}
+                    className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  >
+                    Siguiente
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          {!testCompleted && (
+            <button
+              type="submit"
+              onClick={handleSubmit}
+              className="w-full mt-8 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Enviar Test de Errores
+            </button>
+          )}
+          {results && (
+            <div className="mt-8 bg-white dark:bg-gray-900 shadow-md rounded-lg p-6">
+              <h3 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Resultados del Test:</h3>
+              <p className="text-lg dark:text-gray-200">Respuestas correctas: {results.correctCount}</p>
+              <p className="text-lg dark:text-gray-200">Respuestas incorrectas: {results.incorrectCount}</p>
+              <p className="text-lg dark:text-gray-200">Puntuación: {((results.correctCount / questions.length) * 100).toFixed(2)}%</p>
+            </div>
+          )}
+        </main>
+      </div>
     </div>
   );
 };

@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import TestCard from './TestCard';
 import TestDetails from './TestDetails';
 import { AuthContext } from '../../context/AuthContext';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
-import './TestStatistics.css';  // Estilos personalizados
+import './TestStatistics.css';
+import Swal from 'sweetalert2';
 
 const TestStatistics = () => {
   const [tests, setTests] = useState([]);
@@ -65,36 +66,61 @@ const TestStatistics = () => {
   };
 
   return (
-    <div className="test-statistics">
-      <h2 className="title">Estadísticas de Tests Realizados</h2>
+    <div className="test-statistics h-full dark:bg-gray-800">
+      <h2 className="title dark:text-gray-200">Estadísticas de Tests Realizados</h2>
       <div className="filters">
         <DatePicker
           selected={startDate}
-          onChange={date => setStartDate(date)}
+          onChange={date => {
+            if (endDate && date > endDate) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Fecha inválida',
+                text: 'La fecha de inicio no puede ser posterior a la fecha de fin',
+              });
+            } else {
+              setStartDate(date);
+            }
+          }}
           selectsStart
           startDate={startDate}
           endDate={endDate}
           dateFormat="dd/MM/yyyy"
           placeholderText="Inicio"
           isClearable
+          className="dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
         />
         <DatePicker
           selected={endDate}
-          onChange={date => setEndDate(date)}
+          onChange={date => {
+            if (startDate && date < startDate) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Fecha inválida',
+                text: 'La fecha de fin no puede ser anterior a la fecha de inicio',
+              });
+            } else {
+              setEndDate(date);
+            }
+          }}
           selectsEnd
           startDate={startDate}
           endDate={endDate}
           dateFormat="dd/MM/yyyy"
           placeholderText="Fin"
           isClearable
+          className="dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
         />
         <input
           type="text"
           placeholder="Buscar test..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          className="dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
         />
-        <button onClick={clearFilters} className="clear-filters">Limpiar Filtros</button>
+        <button onClick={clearFilters} className="clear-filters dark:bg-gray-700 dark:text-gray-200">
+          Limpiar Filtros
+        </button>
       </div>
       <div className="test-container">
         {!selectedTest ? filteredTests.map((test) => (

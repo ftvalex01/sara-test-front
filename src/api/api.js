@@ -1,32 +1,61 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000/users'; // Asegúrate de usar el puerto correcto y la URL de tu backend.
+const API_BASE_URL = process.env.REACT_APP_API_URL;
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  // Puedes agregar headers que sean comunes para todas las llamadas aquí.
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-const loginUser = async (loginData) => {
-  try {
-    const response = await apiClient.post('/login', loginData);
-    return response.data; // Aquí se espera que el backend devuelva el token y otros datos del usuario si es necesario.
-  } catch (error) {
-    throw error;
+// Interceptor para manejar los errores globalmente
+apiClient.interceptors.response.use(
+  response => response,
+  error => handleErrorResponse(error)
+);
+
+const handleErrorResponse = (error) => {
+  if (error.response) {
+    // Errores de cliente (400) o de servidor (500)
+    console.error('Error con respuesta del servidor:', error.response);
+    throw new Error(error.response.data.message || 'Error en la solicitud al servidor');
+  } else if (error.request) {
+    // Errores de red o sin respuesta del servidor
+    console.error('Error en la solicitud:', error.request);
+    throw new Error('Error en la solicitud. Por favor, verifica tu conexión a Internet.');
+  } else {
+    // Otros errores
+    console.error('Error:', error.message);
+    throw new Error('Algo salió mal. Por favor, intenta de nuevo.');
   }
 };
 
-// en tu api.js
-const getProfile = async (token) => {
-    try {
-      const response = await apiClient.get('/profile', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      return response.data; // Este será el perfil del usuario
-    } catch (error) {
-      throw error;
-    }
-  };
-  
+const setAuthToken = (token) => {
+  if (token) {
+    apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete apiClient.defaults.headers.common['Authorization'];
+  }
+};
 
-export { loginUser, getProfile };
+const loginUser = async (loginData) => {
+  try {
+    const response = await apiClient.post('/users/login', loginData);
+    return response.data; // Aquí se espera que el backend devuelva el token y otros datos del usuario si es necesario.
+  } catch (error) {
+    handleErrorResponse(error);
+  }
+};
+
+const getProfile = async (token) => {
+  try {
+    setAuthToken(token);
+    const response = await apiClient.get('/profile');
+    return response.data; // Este será el perfil del usuario
+  } catch (error) {
+    handleErrorResponse(error);
+  }
+};
+
+export { loginUser, getProfile, setAuthToken };

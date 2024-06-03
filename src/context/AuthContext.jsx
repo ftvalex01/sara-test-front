@@ -1,4 +1,3 @@
-// /context/AuthContext.jsx
 import React, { createContext, useState, useEffect } from 'react';
 import { loginUser } from '../api/api';
 
@@ -53,7 +52,7 @@ const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, login, logout, user, loading }}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
