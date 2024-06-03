@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL;
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -51,7 +49,7 @@ const loginUser = async (loginData) => {
 const getProfile = async (token) => {
   try {
     setAuthToken(token);
-    const response = await apiClient.get('/profile');
+    const response = await apiClient.get('/users/profile');
     return response.data; // Este será el perfil del usuario
   } catch (error) {
     handleErrorResponse(error);
