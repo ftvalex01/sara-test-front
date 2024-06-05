@@ -68,7 +68,7 @@ const QuizSetupForm = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-800">
+    <div className="flex items-center justify-center min-h-screen bg-gray-400 dark:bg-gray-800">
       <form onSubmit={handleSubmit} className="max-w-md bg-white dark:bg-gray-900 shadow-md rounded-lg p-6 space-y-6">
         <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-200">Configurar Test</h2>
         <div className="mb-6">

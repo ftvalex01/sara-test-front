@@ -14,7 +14,7 @@ const QuizForm = () => {
   const [results, setResults] = useState(null);
   const [testName, setTestName] = useState('');
   const [testCompleted, setTestCompleted] = useState(false);
-  const { state } = useLocation(); 
+  const { state } = useLocation();
   const { user } = useContext(AuthContext);
   const { numQuestions } = useTest();
   const apiBaseUrl = process.env.REACT_APP_API_URL;
@@ -32,7 +32,7 @@ const QuizForm = () => {
           const response = await axios.post(`${apiBaseUrl}/tests/generate`, {
             userId: user.userId,
             numberOfQuestions: numQuestions,
-            testName: testName 
+            testName: testName
           });
           setQuestions(response.data);
           setAnswers(response.data.reduce((acc, question) => ({ ...acc, [question._id]: '' }), {}));
@@ -123,105 +123,102 @@ const QuizForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800">
-      <div className="flex w-full h-full">
-        <aside className="w-1/4 bg-gray-400 dark:bg-gray-900 p-4 ml-2">
-          <h2 className="text-lg font-bold mb-4 dark:text-gray-200">Preguntas</h2>
-          <div className="space-y-2">
-            {questions.map((question, index) => (
-              <button
-                key={index}
-                onClick={() => handleQuestionNavigation(index)}
-                className={`block w-full text-left p-2 rounded ${
-                  currentQuestionIndex === index ? 'bg-blue-400 text-white' :
-                  testCompleted ? (questions[index].isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white') :
-                  answeredQuestions.includes(question._id) ? 'bg-yellow-500 text-white' : 'bg-white text-black dark:bg-gray-700 dark:text-gray-200'
-                }`}
-              >
-                Pregunta {index + 1}
-              </button>
-            ))}
-          </div>
-        </aside>
-        <main className="w-3/4 p-8">
-          <h2 className="text-2xl font-bold mb-4 dark:text-gray-200">{testName}</h2>
-          {questions.length > 0 && (
-            <div className="bg-white dark:bg-gray-900 shadow-md rounded-lg p-8">
-              <div>
-                <h3 className="text-lg font-semibold mb-2 dark:text-gray-200">{questions[currentQuestionIndex].question}</h3>
-                <div className="space-y-2">
-                  {Object.entries(questions[currentQuestionIndex].options).map(([optionKey, optionValue]) => {
-                    const isCorrectAnswer = optionKey === questions[currentQuestionIndex].correctAnswer;
-                    const isUserAnswer = answers[questions[currentQuestionIndex]._id] === optionKey;
-                    const answerClasses = testCompleted
-                      ? isCorrectAnswer ? 'text-green-500 dark:text-green-400' :
-                        isUserAnswer ? 'text-red-500 dark:text-red-400' : ''
-                      : '';
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-400 dark:bg-gray-800">
+      <h2 className="text-2xl font-bold mb-8 dark:text-gray-200">{testName}</h2>
+      <div className="flex items-center justify-center mb-4">
+        {questions.map((question, index) => (
+          <button
+            key={index}
+            onClick={() => handleQuestionNavigation(index)}
+            className={`w-8 h-8 rounded-full mr-2 ${currentQuestionIndex === index ? 'bg-opacity-10 bg-blue-500 text-white' :
+              testCompleted ? (questions[index].isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white') :
+                answeredQuestions.includes(question._id) ? 'bg-yellow-500 text-white' : 'bg-white text-black dark:bg-gray-700 dark:text-gray-200'
+              }`}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
+      <main className="w-full p-8">
+        {questions.length > 0 && (
+          <div className="bg-white dark:bg-gray-900 shadow-md rounded-lg p-8">
+            <div>
+              <h3 className="text-lg font-semibold mb-2 dark:text-gray-200">{questions[currentQuestionIndex].question}</h3>
+              <div className="space-y-2">
+                {Object.entries(questions[currentQuestionIndex].options).map(([optionKey, optionValue]) => {
+                  const isCorrectAnswer = optionKey === questions[currentQuestionIndex].correctAnswer;
+                  const isUserAnswer = answers[questions[currentQuestionIndex]._id] === optionKey;
+                  const answerClasses = testCompleted
+                    ? isCorrectAnswer ? 'text-green-500 dark:text-green-400' :
+                      isUserAnswer ? 'text-red-500 dark:text-red-400' : ''
+                    : '';
 
-                    return (
-                      <label key={optionKey} className={`block ${answerClasses} dark:text-gray-200`}>
-                        <input
-                          type="radio"
-                          name={`question_${questions[currentQuestionIndex]._id}`}
-                          value={optionKey}
-                          checked={isUserAnswer}
-                          onChange={(event) => handleOptionChange(questions[currentQuestionIndex]._id, event.target.value)}
-                          className="mr-2"
-                          disabled={testCompleted}  // Deshabilitar después de enviar el test
-                        />
-                        {optionValue}
-                        {testCompleted && (isUserAnswer || isCorrectAnswer) && (
-                          <>
-                            {isUserAnswer && ` - Tu respuesta${isCorrectAnswer ? ' ✓' : ' ✕'}`}
-                            {!isUserAnswer && isCorrectAnswer && ' - Respuesta correcta ✓'}
-                          </>
-                        )}
-                      </label>
-                    );
-                  })}
-                </div>
-                <div className="flex justify-between mt-4">
+                  return (
+                    <div
+                      key={optionKey}
+                      onClick={() => !testCompleted && handleOptionChange(questions[currentQuestionIndex]._id, optionKey)}
+                      className={`border border-gray-300 rounded-md p-4 cursor-pointer ${answerClasses} dark:text-gray-200 hover:border-blue-400`}
+                    >
+                      <div className="flex items-center">
+                        <div
+                          className={`w-4 h-4 mr-2 border rounded-full ${isUserAnswer ? (isCorrectAnswer ? 'border-green-500' : 'border-red-500') : 'border-gray-400'}`}
+                        ></div>
+                        <span>{optionValue}</span>
+                      </div>
+                      {testCompleted && (isUserAnswer || isCorrectAnswer) && (
+                        <>
+                          {isUserAnswer && ` - Tu respuesta${isCorrectAnswer ? ' ✓' : ' ✕'}`}
+                          {!isUserAnswer && isCorrectAnswer && ' - Respuesta correcta ✓'}
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="flex justify-between mt-4">
+                {!testCompleted && currentQuestionIndex > 0 && (
                   <button
                     type="button"
                     onClick={handlePrevQuestion}
-                    disabled={currentQuestionIndex === 0}
                     className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                   >
                     Anterior
                   </button>
+                )}
+                {!testCompleted && currentQuestionIndex < questions.length - 1 && (
                   <button
                     type="button"
                     onClick={handleNextQuestion}
-                    disabled={currentQuestionIndex === questions.length - 1}
                     className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                   >
                     Siguiente
                   </button>
-                </div>
+                )}
               </div>
             </div>
-          )}
-          {!testCompleted && (
-            <button
-              type="submit"
-              onClick={handleSubmit}
-              className="w-full mt-8 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-              Enviar Test
-            </button>
-          )}
-          {results && (
-            <div className="mt-8 bg-white dark:bg-gray-900 shadow-md rounded-lg p-6">
-              <h3 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Resultados del Test:</h3>
-              <p className="text-lg dark:text-gray-200">Respuestas correctas: {results.correctCount}</p>
-              <p className="text-lg dark:text-gray-200">Respuestas incorrectas: {results.incorrectCount}</p>
-              <p className="text-lg dark:text-gray-200">Puntuación: {((results.correctCount / questions.length) * 100).toFixed(2)}%</p>
-            </div>
-          )}
-        </main>
-      </div>
+          </div>
+        )}
+        {!testCompleted && (
+          <button
+            type="submit"
+            onClick={handleSubmit}
+            className="w-full mt-8 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Enviar Test
+          </button>
+        )}
+        {results && (
+          <div className="mt-8 bg-white dark:bg-gray-900 shadow-md rounded-lg p-6">
+            <h3 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Resultados del Test:</h3>
+            <p className="text-lg dark:text-gray-200">Respuestas correctas: {results.correctCount}</p>
+            <p className="text-lg dark:text-gray-200">Respuestas incorrectas: {results.incorrectCount}</p>
+            <p className="text-lg dark:text-gray-200">Puntuación: {((results.correctCount / questions.length) * 100).toFixed(2)}%</p>
+          </div>
+        )}
+      </main>
     </div>
   );
+
 };
 
 export default QuizForm;

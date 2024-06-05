@@ -70,32 +70,32 @@ const SideMenu = () => {
         <ul className="space-y-12 mt-20">
           <li>
             <NavLink to="/dashboard" className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200 dark:hover:bg-gray-700">
-              Dashboard
+              <span className="material-icons mr-2">dashboard</span> Dashboard
             </NavLink>
           </li>
           <li>
             <NavLink to="/quiz/setup" className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200 dark:hover:bg-gray-700">
-              Hacer Test
+              <span className="material-icons mr-2">article</span> Hacer Test
             </NavLink>
           </li>
           <li>
             <NavLink to="/statistics" className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200 dark:hover:bg-gray-700">
-              Ver Estadísticas
+              <span className="material-icons mr-2">analytics</span> Ver Estadísticas
             </NavLink>
           </li>
           <li>
             <NavLink to="/error-quiz/setup" className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200 dark:hover:bg-gray-700">
-              Realizar Test de Errores
+              <span className="material-icons mr-2">error</span> Realizar Test de Errores
             </NavLink>
           </li>
           <li className="mt-auto">
             <button onClick={handleLogout} className="flex items-center justify-start w-full text-left px-4 py-3 rounded-md hover:bg-red-600 transition duration-200 text-red-300 dark:hover:bg-red-600">
-              Logout
+              <span className="material-icons mr-2">logout</span> Logout
             </button>
           </li>
           <li>
             <button onClick={handleResetTests} className="flex items-center justify-start w-full text-left px-4 py-5 rounded-md hover:bg-red-800 transition duration-200 text-red-400 dark:hover:bg-red-800">
-              Reiniciar Tests
+              <span className="material-icons mr-2">restart_alt</span> Reiniciar Tests
             </button>
           </li>
         </ul>

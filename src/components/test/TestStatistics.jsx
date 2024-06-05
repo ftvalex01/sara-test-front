@@ -12,7 +12,6 @@ const TestStatistics = () => {
   const [tests, setTests] = useState([]);
   const [filteredTests, setFilteredTests] = useState([]);
   const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTest, setSelectedTest] = useState(null);
   const { user } = useContext(AuthContext);
@@ -33,25 +32,26 @@ const TestStatistics = () => {
 
   useEffect(() => {
     filterTests();
-  }, [searchTerm, startDate, endDate, tests]);
+  }, [searchTerm, startDate, tests]);
 
   const filterTests = () => {
     let filtered = tests;
-    if (startDate && endDate) {
-      filtered = filtered.filter(test => {
+    if (startDate) {
+      filtered = filtered.filter((test) => {
         const testDate = new Date(test.createdAt);
-        return testDate >= startDate && testDate <= endDate;
+        return testDate.getDate() === startDate.getDate() &&
+          testDate.getMonth() === startDate.getMonth() &&
+          testDate.getFullYear() === startDate.getFullYear();
       });
     }
     if (searchTerm) {
-      filtered = filtered.filter(test => test.testName?.toLowerCase().includes(searchTerm.toLowerCase()));
+      filtered = filtered.filter((test) => test.testName?.toLowerCase().includes(searchTerm.toLowerCase()));
     }
     setFilteredTests(filtered);
   };
 
   const clearFilters = () => {
     setStartDate(null);
-    setEndDate(null);
     setSearchTerm('');
     setFilteredTests(tests);
   };
@@ -66,48 +66,14 @@ const TestStatistics = () => {
   };
 
   return (
-    <div className="test-statistics h-full dark:bg-gray-800">
+    <div className="test-statistics h-full bg-gray-100 dark:bg-gray-800">
       <h2 className="title dark:text-gray-200">Estadísticas de Tests Realizados</h2>
       <div className="filters">
         <DatePicker
           selected={startDate}
-          onChange={date => {
-            if (endDate && date > endDate) {
-              Swal.fire({
-                icon: 'error',
-                title: 'Fecha inválida',
-                text: 'La fecha de inicio no puede ser posterior a la fecha de fin',
-              });
-            } else {
-              setStartDate(date);
-            }
-          }}
-          selectsStart
-          startDate={startDate}
-          endDate={endDate}
+          onChange={(date) => setStartDate(date)}
           dateFormat="dd/MM/yyyy"
-          placeholderText="Inicio"
-          isClearable
-          className="dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
-        />
-        <DatePicker
-          selected={endDate}
-          onChange={date => {
-            if (startDate && date < startDate) {
-              Swal.fire({
-                icon: 'error',
-                title: 'Fecha inválida',
-                text: 'La fecha de fin no puede ser anterior a la fecha de inicio',
-              });
-            } else {
-              setEndDate(date);
-            }
-          }}
-          selectsEnd
-          startDate={startDate}
-          endDate={endDate}
-          dateFormat="dd/MM/yyyy"
-          placeholderText="Fin"
+          placeholderText="Fecha"
           isClearable
           className="dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
         />
@@ -122,7 +88,7 @@ const TestStatistics = () => {
           Limpiar Filtros
         </button>
       </div>
-      <div className="test-container">
+      <div className="test-container ">
         {!selectedTest ? filteredTests.map((test) => (
           <TestCard key={test._id} test={test} onToggleDetails={handleToggleDetails} />
         )) : <TestDetails test={selectedTest} onBack={handleBack} />}

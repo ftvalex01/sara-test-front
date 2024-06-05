@@ -58,9 +58,11 @@ const ErrorQuizSetupForm = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-800">
+    <div className="flex items-center justify-center min-h-screen bg-gray-400 dark:bg-gray-800">
       <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white dark:bg-gray-900 shadow-md rounded-lg p-8">
         <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-200 mb-6">Configurar Test de Errores</h2>
+        <h3 className="text-1xl font-bold text-center text-gray-800 dark:text-gray-200 mb-6">Aqui puedes realizar test con las preguntas falladas anteriormente</h3>
+
         <div className="mb-6">
           <p className="text-sm text-gray-600 dark:text-gray-400">Preguntas de errores disponibles: {totalErrorQuestions}</p>
         </div>
