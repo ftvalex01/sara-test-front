@@ -1,7 +1,6 @@
 import React from 'react';
 
 const TestCard = ({ test, onToggleDetails }) => {
-
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.getUTCDate().toString().padStart(2, '0') + '/' + 
@@ -12,7 +11,7 @@ const TestCard = ({ test, onToggleDetails }) => {
   const countCorrectAnswers = () => {
     let correctCount = 0;
     test.questions.forEach((question, index) => {
-      if (test.answers[index] === question.correctAnswer) {
+      if (test.answers[index] === question.correct_answer) {
         correctCount++;
       }
     });

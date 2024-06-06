@@ -1,3 +1,4 @@
+// src/context/AuthContext.js
 import React, { createContext, useState, useEffect } from 'react';
 import { loginUser } from '../api/api';
 
@@ -11,14 +12,14 @@ const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       const response = await loginUser({ username, password });
-      const { access_token, username: loggedInUsername, userId } = response;
+      const { access_token, username: loggedInUsername, userId, category } = response;
       
       if (access_token) {
         // Guardar el token y la información del usuario en localStorage
         localStorage.setItem('token', access_token);
-        localStorage.setItem('user', JSON.stringify({ username: loggedInUsername, userId }));
+        localStorage.setItem('user', JSON.stringify({ username: loggedInUsername, userId, category }));
         setIsLoggedIn(true);
-        setUser({ username: loggedInUsername, userId });
+        setUser({ username: loggedInUsername, userId, category });
       }
       
       return response;

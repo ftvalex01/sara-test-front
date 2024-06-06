@@ -25,6 +25,11 @@ const TestStatistics = () => {
         setFilteredTests(sortedTests);
       } catch (error) {
         console.error('Error fetching tests:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudieron cargar las estadísticas de los tests.',
+        });
       }
     };
     fetchTests();
@@ -88,7 +93,7 @@ const TestStatistics = () => {
           Limpiar Filtros
         </button>
       </div>
-      <div className="test-container ">
+      <div className="test-container">
         {!selectedTest ? filteredTests.map((test) => (
           <TestCard key={test._id} test={test} onToggleDetails={handleToggleDetails} />
         )) : <TestDetails test={selectedTest} onBack={handleBack} />}

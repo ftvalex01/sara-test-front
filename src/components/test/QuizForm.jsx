@@ -32,17 +32,17 @@ const QuizForm = () => {
           const response = await axios.post(`${apiBaseUrl}/tests/generate`, {
             userId: user.userId,
             numberOfQuestions: numQuestions,
-            testName: testName
+            category: state.category // Añadir la categoría aquí desde el estado
           });
           setQuestions(response.data);
-          setAnswers(response.data.reduce((acc, question) => ({ ...acc, [question._id]: '' }), {}));
+          setAnswers(response.data.reduce((acc, question) => ({ ...acc, [question.id]: '' }), {}));
         } catch (error) {
           console.error('Error fetching questions:', error);
         }
       }
     };
     fetchQuestions();
-  }, [numQuestions, user, testName, apiBaseUrl]);
+  }, [numQuestions, user, testName, apiBaseUrl, state.category]);
 
   const handleOptionChange = (questionId, option) => {
     setAnswers(prev => ({ ...prev, [questionId]: option }));
@@ -53,7 +53,7 @@ const QuizForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const allAnswered = questions.every(question => answers[question._id] !== '');
+    const allAnswered = questions.every(question => answers[question.id] !== '');
     if (!allAnswered) {
       Swal.fire({
         icon: 'error',
@@ -68,17 +68,17 @@ const QuizForm = () => {
         const response = await axios.post(`${apiBaseUrl}/tests/complete`, {
           userId: user.userId,
           answers: Object.keys(answers).map(key => ({
-            questionId: key,
+            questionId: parseInt(key, 10),
             selectedOption: answers[key]
           })),
           testName
         });
         setResults(response.data);
         const updatedQuestions = questions.map(q => {
-          const detail = response.data.details.find(d => d.questionId === q._id);
+          const detail = response.data.details.find(d => d.questionId === q.id);
           return {
             ...q,
-            isCorrect: detail.isCorrect,
+            isCorrect: detail ? detail.isCorrect : false,
             correctAnswer: q.correct_answer // Asume que obtienes esto desde el backend
           };
         });
@@ -132,7 +132,7 @@ const QuizForm = () => {
             onClick={() => handleQuestionNavigation(index)}
             className={`w-8 h-8 rounded-full mr-2 ${currentQuestionIndex === index ? 'bg-opacity-10 bg-blue-500 text-white' :
               testCompleted ? (questions[index].isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white') :
-                answeredQuestions.includes(question._id) ? 'bg-yellow-500 text-white' : 'bg-white text-black dark:bg-gray-700 dark:text-gray-200'
+                answeredQuestions.includes(question.id) ? 'bg-yellow-500 text-white' : 'bg-white text-black dark:bg-gray-700 dark:text-gray-200'
               }`}
           >
             {index + 1}
@@ -145,9 +145,9 @@ const QuizForm = () => {
             <div>
               <h3 className="text-lg font-semibold mb-2 dark:text-gray-200">{questions[currentQuestionIndex].question}</h3>
               <div className="space-y-2">
-                {Object.entries(questions[currentQuestionIndex].options).map(([optionKey, optionValue]) => {
+                {questions[currentQuestionIndex].options && Object.entries(questions[currentQuestionIndex].options).map(([optionKey, optionValue]) => {
                   const isCorrectAnswer = optionKey === questions[currentQuestionIndex].correctAnswer;
-                  const isUserAnswer = answers[questions[currentQuestionIndex]._id] === optionKey;
+                  const isUserAnswer = answers[questions[currentQuestionIndex].id] === optionKey;
                   const answerClasses = testCompleted
                     ? isCorrectAnswer ? 'text-green-500 dark:text-green-400' :
                       isUserAnswer ? 'text-red-500 dark:text-red-400' : ''
@@ -156,7 +156,7 @@ const QuizForm = () => {
                   return (
                     <div
                       key={optionKey}
-                      onClick={() => !testCompleted && handleOptionChange(questions[currentQuestionIndex]._id, optionKey)}
+                      onClick={() => !testCompleted && handleOptionChange(questions[currentQuestionIndex].id, optionKey)}
                       className={`border border-gray-300 rounded-md p-4 cursor-pointer ${answerClasses} dark:text-gray-200 hover:border-blue-400`}
                     >
                       <div className="flex items-center">
@@ -218,7 +218,6 @@ const QuizForm = () => {
       </main>
     </div>
   );
-
 };
 
 export default QuizForm;

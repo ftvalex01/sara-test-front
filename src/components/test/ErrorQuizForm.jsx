@@ -29,10 +29,11 @@ const ErrorQuizForm = () => {
       axios.post(`${process.env.REACT_APP_API_URL}/tests/faults`, {
         userId: user.userId,
         limit: numErrorQuestions,
-        testName: state?.testName
+        testName: state?.testName,
+        category: user.category
       }).then(response => {
         setQuestions(response.data);
-        setAnswers(response.data.reduce((acc, question) => ({ ...acc, [question._id]: '' }), {}));
+        setAnswers(response.data.reduce((acc, question) => ({ ...acc, [question.id]: '' }), {}));
       }).catch(error => {
         console.error('Error fetching error questions:', error);
         Swal.fire('Error', 'No se pudieron cargar las preguntas de error.', 'error');
@@ -49,7 +50,7 @@ const ErrorQuizForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const allAnswered = questions.every(question => answers[question._id] !== '');
+    const allAnswered = questions.every(question => answers[question.id] !== '');
     if (!allAnswered) {
       Swal.fire({
         icon: 'error',
@@ -64,14 +65,14 @@ const ErrorQuizForm = () => {
         const response = await axios.post(`${process.env.REACT_APP_API_URL}/tests/complete`, {
           userId: user.userId,
           answers: Object.keys(answers).map(key => ({
-            questionId: key,
+            questionId: parseInt(key),
             selectedOption: answers[key]
           })),
           testName: state?.testName 
         });
         setResults(response.data);
         const updatedQuestions = questions.map(q => {
-          const detail = response.data.details.find(d => d.questionId === q._id);
+          const detail = response.data.details.find(d => d.questionId === q.id);
           return {
             ...q,
             isCorrect: detail.isCorrect,
@@ -117,6 +118,7 @@ const ErrorQuizForm = () => {
   const handleQuestionNavigation = (index) => {
     setCurrentQuestionIndex(index);
   };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-400 dark:bg-gray-800">
       <h2 className="text-2xl font-bold mb-8 dark:text-gray-200">{testName}</h2>
@@ -128,7 +130,7 @@ const ErrorQuizForm = () => {
             className={`w-8 h-8 rounded-full mr-2 ${
               currentQuestionIndex === index ? 'bg-opacity-10 bg-blue-500 text-white' :
               testCompleted ? (questions[index].isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white') :
-              answeredQuestions.includes(question._id) ? 'bg-yellow-500 text-white' : 'bg-white text-black dark:bg-gray-700 dark:text-gray-200'
+              answeredQuestions.includes(question.id) ? 'bg-yellow-500 text-white' : 'bg-white text-black dark:bg-gray-700 dark:text-gray-200'
             }`}
           >
             {index + 1}
@@ -143,7 +145,7 @@ const ErrorQuizForm = () => {
               <div className="space-y-2">
                 {Object.entries(questions[currentQuestionIndex].options).map(([optionKey, optionValue]) => {
                   const isCorrectAnswer = optionKey === questions[currentQuestionIndex].correctAnswer;
-                  const isUserAnswer = answers[questions[currentQuestionIndex]._id] === optionKey;
+                  const isUserAnswer = answers[questions[currentQuestionIndex].id] === optionKey;
                   const answerClasses = testCompleted
                     ? isCorrectAnswer ? 'text-green-500 dark:text-green-400' :
                       isUserAnswer ? 'text-red-500 dark:text-red-400' : ''
@@ -152,7 +154,7 @@ const ErrorQuizForm = () => {
                   return (
                     <div 
                       key={optionKey} 
-                      onClick={() => !testCompleted && handleOptionChange(questions[currentQuestionIndex]._id, optionKey)}
+                      onClick={() => !testCompleted && handleOptionChange(questions[currentQuestionIndex].id, optionKey)}
                       className={`border border-gray-300 rounded-md p-4 cursor-pointer ${answerClasses} dark:text-gray-200`}
                     >
                       <div className="flex items-center">
@@ -214,7 +216,6 @@ const ErrorQuizForm = () => {
       </main>
     </div>
   );
-  
 };
 
 export default ErrorQuizForm;

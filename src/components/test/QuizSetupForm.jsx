@@ -21,11 +21,14 @@ const QuizSetupForm = () => {
     const fetchAvailableQuestions = async () => {
       if (user && user.userId) {
         try {
-          const response = await axios.post(`${apiBaseUrl}/tests/generate`, {
-            userId: user.userId,
-            numberOfQuestions: 0
+          const response = await axios.get(`${apiBaseUrl}/tests/available-questions`, {
+            params: {
+              userId: user.userId,
+              category: user.category
+            }
           });
-          setTotalQuestions(response.data.length);
+          const questions = response.data;
+          setTotalQuestions(questions.length);
         } catch (error) {
           console.error('Error fetching available questions:', error);
           Swal.fire({
@@ -60,7 +63,7 @@ const QuizSetupForm = () => {
     }
     setNumQuestions(num);
     setTimeLimit(withTime ? timeMinutes * 60 : null); // Convert minutes to seconds
-    navigate("/quiz/start", { state: { numberOfQuestions: num, testName } });
+    navigate("/quiz/start", { state: { numberOfQuestions: num, testName, category: user.category } }); // Pasar la categoría
   };
 
   const sanitizeInput = (value) => {
@@ -102,7 +105,13 @@ const QuizSetupForm = () => {
         </div>
       
         {error && <p className="text-red-500 text-xs italic dark:text-red-400">{error}</p>}
-        <button type="submit" className="w-full bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+        <button 
+          type="submit" 
+          className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:scale-105 focus:scale-105 ${
+            totalQuestions === 0 ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          disabled={totalQuestions === 0}
+        >
           Empezar Test
         </button>
       </form>

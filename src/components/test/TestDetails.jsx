@@ -14,7 +14,7 @@ const TestDetails = ({ test, onBack }) => {
           <div key={question.questionId} className="bg-white dark:bg-gray-900 shadow-lg rounded-lg p-4">
             <p className="text-lg font-bold mb-2 dark:text-gray-200">Pregunta {index + 1}: {question.question}</p>
             {Object.entries(question.options).map(([key, value]) => {
-              const isCorrectAnswer = key === question.correctAnswer;
+              const isCorrectAnswer = key === question.correct_answer;
               const isUserAnswer = test.answers[index] === key;
               const answerClasses = isCorrectAnswer ? 'text-green-500 dark:text-green-400' :
                                    isUserAnswer ? 'text-red-500 dark:text-red-400' : '';

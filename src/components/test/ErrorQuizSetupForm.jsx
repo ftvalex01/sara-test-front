@@ -50,7 +50,7 @@ const ErrorQuizSetupForm = () => {
       return;
     }
     setNumErrorQuestions(num);
-    navigate("/error-quiz/start", { state: { numberOfQuestions: num, testName } });
+    navigate("/error-quiz/start", { state: { numberOfQuestions: num, testName, category: user.category } });
   };
 
   const sanitizeInput = (value) => {
@@ -93,7 +93,13 @@ const ErrorQuizSetupForm = () => {
           />
         </div>
         <div className="flex items-center justify-between">
-          <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:scale-105 focus:scale-105">
+          <button 
+            type="submit" 
+            className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:scale-105 focus:scale-105 ${
+              totalErrorQuestions === 0 ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            disabled={totalErrorQuestions === 0}
+          >
             Configurar Test de Errores
           </button>
         </div>
