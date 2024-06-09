@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login/Login';
 import QuizForm from './components/test/QuizForm';
@@ -13,6 +13,7 @@ import './index.css';
 
 const App = () => {
   const { isLoggedIn, loading } = useContext(AuthContext);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen">Cargando...</div>;
@@ -22,8 +23,8 @@ const App = () => {
     <Router>
       <div className={`flex min-h-screen ${isLoggedIn ? '' : 'bg-gray-100'}`}>
         {isLoggedIn && (
-          <div className="w-64 fixed inset-y-0 z-30">
-            <SideMenu />
+          <div className={`fixed inset-y-0 z-30 ${menuOpen ? 'w-64' : 'w-0'}`}>
+            <SideMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
           </div>
         )}
         <div className={`flex-1 ${isLoggedIn ? 'lg:ml-64' : 'flex justify-center items-center'}`}>

@@ -15,7 +15,11 @@ const ErrorQuizSetupForm = () => {
 
   useEffect(() => {
     if (user && user.userId) {
-      axios.get(`${process.env.REACT_APP_API_URL}/tests/count-faults/${user.userId}`)
+      axios.get(`${process.env.REACT_APP_API_URL}/tests/count-faults/${user.userId}`, {
+        params: {
+          category: user.category
+        }
+      })
         .then(response => {
           setTotalErrorQuestions(response.data.count);
         })
@@ -58,11 +62,10 @@ const ErrorQuizSetupForm = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-400 dark:bg-gray-800">
-      <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white dark:bg-gray-900 shadow-md rounded-lg p-8">
+    <div className="flex items-center justify-center min-h-screen bg-gray-400 dark:bg-gray-800 p-4">
+      <form onSubmit={handleSubmit} className="w-full max-w-md bg-white dark:bg-gray-900 shadow-md rounded-lg p-8">
         <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-200 mb-6">Configurar Test de Errores</h2>
-        <h3 className="text-1xl font-bold text-center text-gray-800 dark:text-gray-200 mb-6">Aqui puedes realizar test con las preguntas falladas anteriormente</h3>
-
+        <h3 className="text-1xl font-bold text-center text-gray-800 dark:text-gray-200 mb-6">Aquí puedes realizar test con las preguntas falladas anteriormente</h3>
         <div className="mb-6">
           <p className="text-sm text-gray-600 dark:text-gray-400">Preguntas de errores disponibles: {totalErrorQuestions}</p>
         </div>
@@ -95,7 +98,7 @@ const ErrorQuizSetupForm = () => {
         <div className="flex items-center justify-between">
           <button 
             type="submit" 
-            className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:scale-105 focus:scale-105 ${
+            className={`w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:scale-105 focus:scale-105 ${
               totalErrorQuestions === 0 ? 'opacity-50 cursor-not-allowed' : ''
             }`}
             disabled={totalErrorQuestions === 0}

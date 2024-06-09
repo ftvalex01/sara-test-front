@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { useTest } from '../../context/TextContext';
@@ -9,6 +9,7 @@ const SideMenu = () => {
   const { isLoggedIn, logout, user } = useContext(AuthContext);
   const { resetTests } = useTest();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
     if (isLoggedIn) {
@@ -62,45 +63,100 @@ const SideMenu = () => {
   };
 
   return (
-    <aside className="w-64 h-full bg-gray-800 text-gray-300 dark:bg-gray-900 dark:text-gray-200" aria-label="Sidebar">
-      <div className="overflow-y-auto py-4 px-3 rounded">
-        <div className="mb-4">
-          <DarkModeToggle />
+    <>
+      <button
+        className="block lg:hidden p-4 focus:outline-none text-gray-800 dark:text-white"
+        onClick={() => setMenuOpen(!menuOpen)}
+        onTouchStart={() => setMenuOpen(!menuOpen)}
+      >
+        <span className="material-icons">menu</span>
+      </button>
+      {menuOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black opacity-50"
+          onClick={() => setMenuOpen(false)}
+          onTouchStart={() => setMenuOpen(false)}
+        ></div>
+      )}
+      <aside
+        className={`fixed h-full inset-y-0 z-50 w-64 bg-gray-800 text-gray-300 dark:bg-gray-900 dark:text-gray-200 transform ${
+          menuOpen ? 'translate-x-0' : '-translate-x-full'
+        } transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0`}
+        aria-label="Sidebar"
+      >
+        <div className="overflow-y-auto py-4 px-3 rounded h-full">
+          <div className="mb-4">
+            <DarkModeToggle />
+          </div>
+          <ul className="space-y-12 mt-20">
+            <li>
+              <NavLink
+                to="/dashboard"
+                className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200 dark:hover:bg-gray-700"
+                onClick={() => setMenuOpen(false)}
+             
+              >
+                <span className="material-icons mr-2">dashboard</span> Dashboard
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/quiz/setup"
+                className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200 dark:hover:bg-gray-700"
+                onClick={() => setMenuOpen(false)}
+             
+              >
+                <span className="material-icons mr-2">article</span> Hacer Test
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/statistics"
+                className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200 dark:hover:bg-gray-700"
+                onClick={() => setMenuOpen(false)}
+              
+              >
+                <span className="material-icons mr-2">analytics</span> Ver Estadísticas
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/error-quiz/setup"
+                className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200 dark:hover:bg-gray-700"
+                onClick={() => setMenuOpen(false)}
+                
+              >
+                <span className="material-icons mr-2">error</span> Realizar Test de Errores
+              </NavLink>
+            </li>
+            <li className="mt-auto">
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setMenuOpen(false);
+                }}
+             
+                className="flex items-center justify-start w-full text-left px-4 py-3 rounded-md hover:bg-red-600 transition duration-200 text-red-300 dark:hover:bg-red-600"
+              >
+                <span className="material-icons mr-2">logout</span> Logout
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => {
+                  handleResetTests();
+                  setMenuOpen(false);
+                }}
+            
+                className="flex items-center justify-start w-full text-left px-4 py-5 rounded-md hover:bg-red-800 transition duration-200 text-red-400 dark:hover:bg-red-800"
+              >
+                <span className="material-icons mr-2">restart_alt</span> Reiniciar Tests
+              </button>
+            </li>
+          </ul>
         </div>
-        <ul className="space-y-12 mt-20">
-          <li>
-            <NavLink to="/dashboard" className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200 dark:hover:bg-gray-700">
-              <span className="material-icons mr-2">dashboard</span> Dashboard
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/quiz/setup" className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200 dark:hover:bg-gray-700">
-              <span className="material-icons mr-2">article</span> Hacer Test
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/statistics" className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200 dark:hover:bg-gray-700">
-              <span className="material-icons mr-2">analytics</span> Ver Estadísticas
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/error-quiz/setup" className="flex items-center px-4 py-3 rounded-md hover:bg-gray-700 transition duration-200 dark:hover:bg-gray-700">
-              <span className="material-icons mr-2">error</span> Realizar Test de Errores
-            </NavLink>
-          </li>
-          <li className="mt-auto">
-            <button onClick={handleLogout} className="flex items-center justify-start w-full text-left px-4 py-3 rounded-md hover:bg-red-600 transition duration-200 text-red-300 dark:hover:bg-red-600">
-              <span className="material-icons mr-2">logout</span> Logout
-            </button>
-          </li>
-          <li>
-            <button onClick={handleResetTests} className="flex items-center justify-start w-full text-left px-4 py-5 rounded-md hover:bg-red-800 transition duration-200 text-red-400 dark:hover:bg-red-800">
-              <span className="material-icons mr-2">restart_alt</span> Reiniciar Tests
-            </button>
-          </li>
-        </ul>
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 };
 

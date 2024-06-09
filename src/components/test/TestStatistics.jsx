@@ -19,7 +19,11 @@ const TestStatistics = () => {
   useEffect(() => {
     const fetchTests = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/tests/completed/${user.userId}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/tests/completed/${user.userId}`, {
+          params: {
+            category: user.category
+          }
+        });
         const sortedTests = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setTests(sortedTests);
         setFilteredTests(sortedTests);

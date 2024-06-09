@@ -4,7 +4,11 @@ const TestDetails = ({ test, onBack }) => {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
-        <button onClick={onBack} className="bg-gray-200 outline dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-bold py-2 px-4 rounded inline-flex items-center">
+        <button 
+          onClick={onBack} 
+
+          className="bg-gray-200 outline dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-bold py-2 px-4 rounded inline-flex items-center"
+        >
           Volver
         </button>
         <h2 className="text-xl font-semibold dark:text-gray-200">Detalles del Test</h2>

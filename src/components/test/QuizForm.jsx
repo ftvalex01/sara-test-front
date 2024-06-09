@@ -4,7 +4,7 @@ import { AuthContext } from '../../context/AuthContext';
 import { useTest } from '../../context/TextContext';
 import Swal from 'sweetalert2';
 import { useLocation } from 'react-router-dom';
-import './TestStatistics.css';  // Estilos personalizados
+import './TestStatistics.css';
 
 const QuizForm = () => {
   const [questions, setQuestions] = useState([]);
@@ -32,7 +32,7 @@ const QuizForm = () => {
           const response = await axios.post(`${apiBaseUrl}/tests/generate`, {
             userId: user.userId,
             numberOfQuestions: numQuestions,
-            category: state.category // Añadir la categoría aquí desde el estado
+            category: state.category
           });
           setQuestions(response.data);
           setAnswers(response.data.reduce((acc, question) => ({ ...acc, [question.id]: '' }), {}));
@@ -71,7 +71,8 @@ const QuizForm = () => {
             questionId: parseInt(key, 10),
             selectedOption: answers[key]
           })),
-          testName
+          testName,
+          category: state.category
         });
         setResults(response.data);
         const updatedQuestions = questions.map(q => {
@@ -79,11 +80,11 @@ const QuizForm = () => {
           return {
             ...q,
             isCorrect: detail ? detail.isCorrect : false,
-            correctAnswer: q.correct_answer // Asume que obtienes esto desde el backend
+            correctAnswer: q.correct_answer
           };
         });
         setQuestions(updatedQuestions);
-        setTestCompleted(true);  // Indica que el test ha sido completado
+        setTestCompleted(true);
         Swal.fire(
           '¡Buen trabajo!',
           'Respuestas enviadas y evaluadas correctamente',
@@ -123,25 +124,26 @@ const QuizForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-400 dark:bg-gray-800">
-      <h2 className="text-2xl font-bold mb-8 dark:text-gray-200">{testName}</h2>
-      <div className="flex items-center justify-center mb-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-400 dark:bg-gray-800 p-4">
+      <h2 className="text-2xl font-bold mb-8 dark:text-gray-200 text-center">{testName}</h2>
+      <div className="flex items-center justify-center mb-4 flex-wrap gap-2">
         {questions.map((question, index) => (
           <button
             key={index}
             onClick={() => handleQuestionNavigation(index)}
-            className={`w-8 h-8 rounded-full mr-2 ${currentQuestionIndex === index ? 'bg-opacity-10 bg-blue-500 text-white' :
+            className={`w-8 h-8 rounded-full ${
+              currentQuestionIndex === index ? 'bg-opacity-10 bg-blue-500 text-white' :
               testCompleted ? (questions[index].isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white') :
-                answeredQuestions.includes(question.id) ? 'bg-yellow-500 text-white' : 'bg-white text-black dark:bg-gray-700 dark:text-gray-200'
-              }`}
+              answeredQuestions.includes(question.id) ? 'bg-yellow-500 text-white' : 'bg-white text-black dark:bg-gray-700 dark:text-gray-200'
+            }`}
           >
             {index + 1}
           </button>
         ))}
       </div>
-      <main className="w-full p-8">
+      <main className="w-full max-w-3xl p-4">
         {questions.length > 0 && (
-          <div className="bg-white dark:bg-gray-900 shadow-md rounded-lg p-8">
+          <div className="bg-white dark:bg-gray-900 shadow-md rounded-lg p-4 md:p-8">
             <div>
               <h3 className="text-lg font-semibold mb-2 dark:text-gray-200">{questions[currentQuestionIndex].question}</h3>
               <div className="space-y-2">
