@@ -33,7 +33,12 @@ const ErrorQuizForm = () => {
         category: user.category
       }).then(response => {
         setQuestions(response.data);
-        setAnswers(response.data.reduce((acc, question) => ({ ...acc, [question.id]: '' }), {}));
+        const answers = {};
+        response.data.forEach((question) => {
+          answers[question.id] = '';
+        });
+        setAnswers(answers);
+
       }).catch(error => {
         console.error('Error fetching error questions:', error);
         Swal.fire('Error', 'No se pudieron cargar las preguntas de error.', 'error');
@@ -69,7 +74,7 @@ const ErrorQuizForm = () => {
             selectedOption: answers[key]
           })),
           testName: state?.testName,
-          category: user.category 
+          category: user.category
         });
         setResults(response.data);
         const updatedQuestions = questions.map(q => {
@@ -128,11 +133,10 @@ const ErrorQuizForm = () => {
           <button
             key={index}
             onClick={() => handleQuestionNavigation(index)}
-            className={`w-10 h-10 rounded-full flex items-center justify-center ${
-              currentQuestionIndex === index ? 'bg-opacity-10 bg-blue-500 text-white' :
-              testCompleted ? (questions[index].isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white') :
-              answeredQuestions.includes(question.id) ? 'bg-yellow-500 text-white' : 'bg-white text-black dark:bg-gray-700 dark:text-gray-200'
-            }`}
+            className={`w-10 h-10 rounded-full flex items-center justify-center ${currentQuestionIndex === index ? 'bg-opacity-10 bg-blue-500 text-white' :
+                testCompleted ? (questions[index].isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white') :
+                  answeredQuestions.includes(question.id) ? 'bg-yellow-500 text-white' : 'bg-white text-black dark:bg-gray-700 dark:text-gray-200'
+              }`}
           >
             {index + 1}
           </button>
@@ -153,17 +157,16 @@ const ErrorQuizForm = () => {
                     : '';
 
                   return (
-                    <div 
-                      key={optionKey} 
+                    <div
+                      key={optionKey}
                       onClick={() => !testCompleted && handleOptionChange(questions[currentQuestionIndex].id, optionKey)}
                       className={`border border-gray-300 rounded-md p-4 cursor-pointer ${answerClasses} dark:text-gray-200 hover:border-blue-400`}
-                      
+
                     >
                       <div className="flex items-center">
-                        <div 
-                          className={`w-4 h-4 mr-2 border rounded-full flex-shrink-0 ${
-                            isUserAnswer ? (isCorrectAnswer ? 'border-green-500' : 'border-red-500') : 'border-gray-400'
-                          }`}
+                        <div
+                          className={`w-4 h-4 mr-2 border rounded-full flex-shrink-0 ${isUserAnswer ? (isCorrectAnswer ? 'border-green-500' : 'border-red-500') : 'border-gray-400'
+                            }`}
                         ></div>
                         <span className="flex-grow">{optionValue}</span>
                       </div>

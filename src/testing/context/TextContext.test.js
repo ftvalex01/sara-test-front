@@ -2,7 +2,7 @@ import React from 'react';
 import { render, act, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import axios from 'axios';
-import { TestProvider, useTest } from '../../context/TextContext'; // Ajusta la ruta según tu estructura de proyecto
+import { TestProvider, useTest } from '../../context/TextContext';
 
 // Mock de axios para simular las llamadas HTTP
 jest.mock('axios');
@@ -105,7 +105,7 @@ describe('TestContext', () => {
     });
 
     expect(getByTestId('numQuestions').textContent).toBe('10');
-    expect(getByTestId('numErrorQuestions').textContent).toBe('2');
+    expect(getByTestId('numErrorQuestions').textContent).toBe ('2');
 
     // Llama a resetTests
     await act(async () => {
@@ -123,8 +123,26 @@ describe('TestContext', () => {
   });
 
   // Prueba para verificar el manejo de errores en resetTests
-  test('resetTests handles error', async () => {
-    axios.post.mockRejectedValueOnce(new Error('Network error'));
+  test('resetTests handles server error response', async () => {
+    axios.post.mockResolvedValueOnce({ data: { success: false, error: 'Server error' } });
+
+    const { getByText } = renderWithProvider(<TestComponent />);
+
+    // Llama a resetTests y verifica que se maneje el error del servidor
+    await act(async () => {
+      getByText('Reset').click();
+    });
+
+    await waitFor(() => {
+      expect(console.error).toHaveBeenCalledWith('Error resetting tests:', 'Server error');
+    });
+  });
+
+  // Prueba para verificar el manejo de errores de red en resetTests
+  test('resetTests handles network error', async () => {
+    axios.post.mockRejectedValueOnce({
+      request: {}
+    });
 
     const { getByText } = renderWithProvider(<TestComponent />);
 
@@ -133,7 +151,24 @@ describe('TestContext', () => {
       getByText('Reset').click();
     });
 
-    // Verifica que console.error se haya llamado con el mensaje de error correcto
-    expect(console.error).toHaveBeenCalledWith('Error resetting tests:', expect.any(Error));
+    await waitFor(() => {
+      expect(console.error).toHaveBeenCalledWith('Error resetting tests:', { request: {} });
+    });
+  });
+
+  // Prueba para verificar el manejo de otros errores en resetTests
+  test('resetTests handles other errors', async () => {
+    axios.post.mockRejectedValueOnce(new Error('Unexpected error'));
+
+    const { getByText } = renderWithProvider(<TestComponent />);
+
+    // Llama a resetTests y simula un error inesperado
+    await act(async () => {
+      getByText('Reset').click();
+    });
+
+    await waitFor(() => {
+      expect(console.error).toHaveBeenCalledWith('Error resetting tests:', new Error('Unexpected error'));
+    });
   });
 });

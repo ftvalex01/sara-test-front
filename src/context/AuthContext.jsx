@@ -1,4 +1,3 @@
-// src/context/AuthContext.js
 import React, { createContext, useState, useEffect } from 'react';
 import { loginUser } from '../api/api';
 
@@ -42,7 +41,7 @@ const AuthProvider = ({ children }) => {
     const storedUser = localStorage.getItem('user');
     if (token && storedUser) {
       setIsLoggedIn(true);
-      setUser(JSON.parse(storedUser)); // Parsear el usuario guardado y actualizar el estado
+      setUser(JSON.parse(storedUser)); 
     }
     setLoading(false);
   };

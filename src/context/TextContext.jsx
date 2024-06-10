@@ -8,7 +8,7 @@ export const useTest = () => useContext(TestContext);
 export const TestProvider = ({ children }) => {
   const [numQuestions, setNumQuestions] = useState(0);
   const [numErrorQuestions, setNumErrorQuestions] = useState(0);
-  const [timeLimit, setTimeLimit] = useState(null); // Estado para el límite de tiempo
+  const [timeLimit, setTimeLimit] = useState(null); 
 
   const resetTests = async (userId) => {
     try {

@@ -36,9 +36,9 @@ const LoginForm = () => {
   return (
     <div className="flex flex-col items-center justify-center p-8 bg-white dark:bg-gray-900 rounded-lg shadow-2xl">
       <div className="mb-6 text-center">
-        {/* Aquí puedes incluir tu imagen de logo si tienes una */}
+ 
         {/* <img
-          src="/path-to-your-logo.png"
+          src=""
           alt="Logo"
           className="w-20 h-20 rounded-full mb-4"
         /> */}

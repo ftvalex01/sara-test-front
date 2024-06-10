@@ -35,7 +35,12 @@ const QuizForm = () => {
             category: state.category
           });
           setQuestions(response.data);
-          setAnswers(response.data.reduce((acc, question) => ({ ...acc, [question.id]: '' }), {}));
+          const answers = {};
+          response.data.forEach((question) => {
+            answers[question.id] = '';
+          });
+          setAnswers(answers);
+          
         } catch (error) {
           console.error('Error fetching questions:', error);
         }
