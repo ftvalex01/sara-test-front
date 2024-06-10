@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { loginUser, getProfile, setAuthToken } from '../../api/api'; // Ajusta la ruta según la estructura de tu proyecto
+import { loginUser, getProfile, setAuthToken } from '../../api/api'; 
 
 // Mock de axios para simular las llamadas HTTP
 jest.mock('axios');

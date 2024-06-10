@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, waitFor, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { AuthProvider, AuthContext } from '../../context/AuthContext'; // Importa el proveedor de autenticación y el contexto
-import { loginUser } from '../../api/api'; // Importa la función de login de la API
+import { AuthProvider, AuthContext } from '../../context/AuthContext'; 
+import { loginUser } from '../../api/api'; 
 
 // Mock de la función loginUser
 jest.mock('../../api/api', () => ({
