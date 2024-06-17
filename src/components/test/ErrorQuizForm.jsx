@@ -133,22 +133,24 @@ const ErrorQuizForm = () => {
           <button
             key={index}
             onClick={() => handleQuestionNavigation(index)}
-            className={`w-10 h-10 rounded-full flex items-center justify-center ${currentQuestionIndex === index ? 'bg-opacity-10 bg-blue-500 text-white' :
-                testCompleted ? (questions[index].isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white') :
-                  answeredQuestions.includes(question.id) ? 'bg-yellow-500 text-white' : 'bg-white text-black dark:bg-gray-700 dark:text-gray-200'
-              }`}
+            className={`w-8 h-8 rounded-full ${
+              currentQuestionIndex === index ? 'border-2 border-black dark:border-blue-700' : ''
+            } ${
+              testCompleted ? (questions[index].isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white') :
+              answeredQuestions.includes(question.id) ? 'bg-blue-600 dark:bg-yellow-500 text-white' : 'bg-white text-black dark:bg-gray-700 dark:text-gray-200'
+            }`}
           >
             {index + 1}
           </button>
         ))}
       </div>
-      <main className="w-full max-w-3xl p-4">
+      <main className="w-full p-4">
         {questions.length > 0 && (
           <div className="bg-white dark:bg-gray-900 shadow-md rounded-lg p-4 md:p-8">
             <div>
               <h3 className="text-lg font-semibold mb-2 dark:text-gray-200">{questions[currentQuestionIndex].question}</h3>
               <div className="space-y-2">
-                {Object.entries(questions[currentQuestionIndex].options).map(([optionKey, optionValue]) => {
+                {questions[currentQuestionIndex].options && Object.entries(questions[currentQuestionIndex].options).map(([optionKey, optionValue]) => {
                   const isCorrectAnswer = optionKey === questions[currentQuestionIndex].correctAnswer;
                   const isUserAnswer = answers[questions[currentQuestionIndex].id] === optionKey;
                   const answerClasses = testCompleted
@@ -161,14 +163,12 @@ const ErrorQuizForm = () => {
                       key={optionKey}
                       onClick={() => !testCompleted && handleOptionChange(questions[currentQuestionIndex].id, optionKey)}
                       className={`border border-gray-300 rounded-md p-4 cursor-pointer ${answerClasses} dark:text-gray-200 hover:border-blue-400`}
-
                     >
                       <div className="flex items-center">
                         <div
-                          className={`w-4 h-4 mr-2 border rounded-full flex-shrink-0 ${isUserAnswer ? (isCorrectAnswer ? 'border-green-500' : 'border-red-500') : 'border-gray-400'
-                            }`}
+                          className={`w-4 h-4 mr-2 border rounded-full ${isUserAnswer ? (isCorrectAnswer ? 'border-green-500' : 'border-blue-700 dark:border-yellow-400') : 'border-gray-400'}`}
                         ></div>
-                        <span className="flex-grow">{optionValue}</span>
+                        <span>{optionValue}</span>
                       </div>
                       {testCompleted && (isUserAnswer || isCorrectAnswer) && (
                         <>
@@ -225,4 +225,4 @@ const ErrorQuizForm = () => {
   );
 };
 
-export default ErrorQuizForm;
+export default ErrorQuizForm

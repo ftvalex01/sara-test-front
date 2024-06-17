@@ -137,9 +137,10 @@ const QuizForm = () => {
             key={index}
             onClick={() => handleQuestionNavigation(index)}
             className={`w-8 h-8 rounded-full ${
-              currentQuestionIndex === index ? 'bg-opacity-10 bg-blue-500 text-white' :
+              currentQuestionIndex === index ? 'border-2 border-black dark:border-blue-700' : ''
+            } ${
               testCompleted ? (questions[index].isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white') :
-              answeredQuestions.includes(question.id) ? 'bg-yellow-500 text-white' : 'bg-white text-black dark:bg-gray-700 dark:text-gray-200'
+              answeredQuestions.includes(question.id) ? 'bg-blue-600 dark:bg-yellow-500 text-white' : 'bg-white text-black dark:bg-gray-700 dark:text-gray-200'
             }`}
           >
             {index + 1}
@@ -168,7 +169,7 @@ const QuizForm = () => {
                     >
                       <div className="flex items-center">
                         <div
-                          className={`w-4 h-4 mr-2 border rounded-full ${isUserAnswer ? (isCorrectAnswer ? 'border-green-500' : 'border-red-500') : 'border-gray-400'}`}
+                          className={`w-4 h-4 mr-2 border rounded-full ${isUserAnswer ? (isCorrectAnswer ? 'border-green-500' : 'border-blue-700 dark:border-yellow-400') : 'border-gray-400'}`}
                         ></div>
                         <span>{optionValue}</span>
                       </div>
